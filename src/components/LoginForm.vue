@@ -20,9 +20,9 @@
             <v-card-text>
               <v-form >
                 <v-text-field
-                  ref="username"
-                  v-model="username"
-                  :rules="[() => !!username || 'This field is required']"
+                  ref="email"
+                  v-model="email"
+                  :rules="[() => !!email || 'This field is required']"
                   prepend-icon="mdi-account"
                   label="Login"
                   placeholder="TotallyNotThanos"
@@ -71,7 +71,7 @@
           </v-card>
         </v-flex>
       </v-layout>
-      
+
     </v-container>
   </v-content>
 </template>
@@ -80,7 +80,7 @@
 export default {
   data: function () {
     return {
-      username: '',
+      email: '',
       password: '',
       errorMessages: 'Incorrect login info',
       snackbar: false,
@@ -92,9 +92,9 @@ export default {
   // Sends action to Vuex that will log you in and redirect to the dash otherwise, error
   methods: {
     login: function () {
-      let username = this.username
+      let email = this.email
       let password = this.password
-      this.$store.dispatch('login', { username, password })
+      this.$store.dispatch('login', { email, password })
         .then(() => this.$router.push('/dashboard'))
         .catch(err => {
         console.log(err)
