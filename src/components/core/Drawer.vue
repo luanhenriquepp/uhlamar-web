@@ -29,7 +29,7 @@
             />
           </v-list-tile-avatar>
           <v-list-tile-title class="title">
-            Vuetify Admin Dash
+            Uhlamar Admin
           </v-list-tile-title>
         </v-list-tile>
         <v-divider/>
@@ -89,25 +89,25 @@ export default {
         text: 'Table List'
       },
       {
-        to: '/dashboard/user-tables',
+        to: '/dashboard/purchase-table',
         icon: 'mdi-table-edit',
-        text: 'Users Table'
+        text: 'Tabela de Compras'
       },
-      {
-        to: '/dashboard/typography',
-        icon: 'mdi-format-font',
-        text: 'Typography'
-      },
+      // {
+      //   to: '/dashboard/typography',
+      //   icon: 'mdi-format-font',
+      //   text: 'Typography'
+      // },
       {
         to: '/dashboard/icons',
         icon: 'mdi-chart-bubble',
         text: 'Icons'
       },
-      {
-        to: '/dashboard/maps',
-        icon: 'mdi-map-marker',
-        text: 'Maps'
-      },
+      // {
+      //   to: '/dashboard/maps',
+      //   icon: 'mdi-map-marker',
+      //   text: 'Maps'
+      // },
       {
         to: '/dashboard/notifications',
         icon: 'mdi-bell',

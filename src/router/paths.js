@@ -23,9 +23,8 @@ export default [
       requiresAuth: false
     },
     component: () =>
-      import(/* webpackChunkName: "routes" */ `@/views/LoginHome.vue`),
-    // redirect if already signed in
-    beforeEnter: (to, from, next) => {
+      import(`@/views/LoginHome.vue`),
+      beforeEnter: (to, from, next) => {
       if (store.getters.authorized) {
         next('/dashbaord')
       } else {
@@ -75,7 +74,7 @@ export default [
           name: 'User Table',
           requiresAuth: true
         },
-        component: () => import(`@/components/DashViews/UsersTable.vue`)
+        component: () => import(`@/components/DashViews/PurchaseTable.vue`)
       },
       {
         path: 'tablestest',
@@ -85,14 +84,14 @@ export default [
         },
         component: () => import(`@/components/DashViews/TableList.vue`)
       },
-      {
-        path: 'typography',
-        meta: {
-          name: 'Typography',
-          requiresAuth: true
-        },
-        component: () => import(`@/components/DashViews/Typography.vue`)
-      },
+      // {
+      //   path: 'typography',
+      //   meta: {
+      //     name: 'Typography',
+      //     requiresAuth: true
+      //   },
+      //   component: () => import(`@/components/DashViews/Typography.vue`)
+      // },
       {
         path: 'icons',
         meta: {
@@ -101,14 +100,14 @@ export default [
         },
         component: () => import(`@/components/DashViews/Icons.vue`)
       },
-      {
-        path: 'maps',
-        meta: {
-          name: 'Maps',
-          requiresAuth: true
-        },
-        component: () => import(`@/components/DashViews/Maps.vue`)
-      },
+      // {
+      //   path: 'maps',
+      //   meta: {
+      //     name: 'Maps',
+      //     requiresAuth: true
+      //   },
+      //   component: () => import(`@/components/DashViews/Maps.vue`)
+      // },
       {
         path: 'notifications',
         meta: {
