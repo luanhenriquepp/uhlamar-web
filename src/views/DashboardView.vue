@@ -24,7 +24,7 @@ export default {
   name: 'DashboardView',
   metaInfo () {
     return {
-      title: 'Vuetify Admin Dashboard by ClintOxx'
+      title: 'Dashboard'
     }
   }
 }

@@ -14,7 +14,7 @@
             class="elevation-12">
             <v-toolbar
               color="general">
-              <v-toolbar-title>Admin Panel</v-toolbar-title>
+              <v-toolbar-title>Painel Administrativo</v-toolbar-title>
               <v-spacer/>
             </v-toolbar>
             <v-card-text>
@@ -22,16 +22,16 @@
                 <v-text-field
                   ref="email"
                   v-model="email"
-                  :rules="[() => !!email || 'This field is required']"
+                  :rules="[() => !!email || 'Campo obrigatório']"
                   prepend-icon="mdi-account"
                   label="Login"
-                  placeholder="TotallyNotThanos"
+                  placeholder="E-mail"
                   required
                 />
                 <v-text-field
                   ref="password"
                   v-model="password"
-                  :rules="[() => !!password || 'This field is required']"
+                  :rules="[() => !!password || 'Campo obrigatório']"
                   :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
                   :type="showPassword ? 'text' : 'password'"
                   prepend-icon="mdi-lock"
@@ -82,14 +82,13 @@ export default {
     return {
       email: '',
       password: '',
-      errorMessages: 'Incorrect login info',
+      errorMessages: 'Informações de login incorretas',
       snackbar: false,
       color: 'general',
       showPassword: false
     }
   },
 
-  // Sends action to Vuex that will log you in and redirect to the dash otherwise, error
   methods: {
     login: function () {
       let email = this.email
@@ -98,14 +97,14 @@ export default {
         .then(() => this.$router.push('/dashboard'))
         .catch(err => {
         console.log(err)
-        this.snackbar= true
+        this.snackbar = true
         }
         )
     }
   },
   metaInfo () {
     return {
-      title: 'Super Secret | Login'
+      title: 'Uhlamar'
     }
   }
 }
