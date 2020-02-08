@@ -69,9 +69,9 @@ export default [
         component: () => import(`@/components/DashViews/SimpleTables.vue`)
       },
       {
-        path: 'user-tables',
+        path: 'purchase-table',
         meta: {
-          name: 'User Table',
+          name: 'Tabela de Compras',
           requiresAuth: true
         },
         component: () => import(`@/components/DashViews/PurchaseTable.vue`)

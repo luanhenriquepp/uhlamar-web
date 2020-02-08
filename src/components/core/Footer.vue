@@ -1,7 +1,7 @@
 <template>
   <v-footer
     id="core-footer"
-    absolute
+    relative
     height="82"
   >
     <div class="footer-items">

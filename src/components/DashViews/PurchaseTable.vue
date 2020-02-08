@@ -263,7 +263,7 @@
                 </td>
                 <td>
                   <v-edit-dialog
-                    :return-value.sync="props.item.dt_purchase"
+                    :return-value.sync="props.item.dt_purchase_format"
                     large
                     lazy
                     persistent
@@ -272,10 +272,10 @@
                     @open="openInline"
                     @close="closeInline"
                   >
-                    <div>{{ props.item.dt_purchase }}</div>
+                    <div>{{ props.item.dt_purchase_format }}</div>
                     <template v-slot:input>
                       <v-text-field
-                        v-model="props.item.dt_purchase"
+                        v-model="props.item.dt_purchase_format"
                         :rules="[max25chars]"
                         label="Edit"
                         single-line
@@ -347,7 +347,7 @@ export default {
       quantity: '',
       size: '',
       total_purchase: '',
-      dt_purchase: '',
+      dt_purchase_format: ''
     },
     defaultItem: {
 
