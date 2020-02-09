@@ -261,7 +261,7 @@
                     @open="openInline"
                     @close="closeInline"
                   >
-                    <div>{{ props.item.size }}</div>
+                    <div>{{ verificaTamanho(props.item.size) }}</div>
                     <template v-slot:input>
                       <v-text-field
                         v-model="props.item.size"
@@ -431,6 +431,19 @@ export default {
       this.dialog = dbox
     },
 
+    verificaTamanho (value) {
+      switch (value) {
+        case 'P':
+          return 'Pequeno'
+        case 'M':
+          return 'Médio'
+        case 'G':
+          return 'Grande'
+        default:
+          return 'Único'
+      }
+    },
+
     callTableAction (item, endpoint, method) {
       let tableItem = this.editedItem
       this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
@@ -448,6 +461,7 @@ export default {
       let endpoint = `purchase/${this.editedItem.purchase_id}`
       let method = 'DELETE'
       this.callTableAction(item, endpoint, method)
+      this.getPurchase()
     },
 
     close () {
@@ -467,7 +481,8 @@ export default {
         this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
         .then((response) => {
           console.log(response)
-          this.saveInline()
+          this.saveInline(response.data)
+          this.getPurchase()
         })
         .catch(error => {
           console.log(error)
@@ -481,6 +496,7 @@ export default {
         this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
         .then((response) => console.log(response.data.data))
         .catch(error => {
+          this.getPurchase()
           console.log(error)
           return this.cancelInline
           })
