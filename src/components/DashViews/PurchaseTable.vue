@@ -43,41 +43,78 @@
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.username"
-                          label="Username" />
+                          v-model="editedItem.product_name"
+                          label="Produto" />
                       </v-flex>
                       <v-flex
                         xs12
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.password"
-                          label="Password" />
+                          v-model="editedItem.provider_name"
+                          label="Fornecedor" />
                       </v-flex>
                       <v-flex
                         xs12
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.email"
-                          label="Email"/>
+                          v-model="editedItem.quantity"
+                          label="Quantidade"/>
                       </v-flex>
                       <v-flex
                         xs12
                         sm6
                         md4>
-                        <v-checkbox
-                          v-model="checkboxAdmin"
-                          :label="`IsAdmin`"/>
-
+                        <v-text-field
+                          v-model="editedItem.size"
+                          label="Tamanho"/>
                       </v-flex>
                       <v-flex
                         xs12
                         sm6
                         md4>
-                        <v-checkbox
-                          v-model="checkboxActive"
-                          :label="`IsActive`"/>
+                        <v-text-field
+                          v-model="editedItem.price"
+                          label="Preço"/>
+                      </v-flex>
+                      <v-flex
+                        xs12
+                        sm6
+                        md4>
+                        <v-menu
+                          ref="menu"
+                          v-model="menu"
+                          :close-on-content-click="false"
+                          :return-value.sync="editedItem.dt_purchase"
+                          transition="scale-transition"
+                          offset-y
+                          min-width="290px"
+                        >
+                          <template v-slot:activator="{ on }">
+                            <v-text-field
+                              v-model="editedItem.dt_purchase"
+                              label="Selecionar Data"
+                              prepend-icon="event"
+                              readonly
+                              v-on="on"
+                            />
+                          </template>
+                          <v-date-picker
+                            v-model="editedItem.dt_purchase"
+                            no-title
+                            scrollable>
+                            <v-spacer/>
+                            <v-btn
+                              text
+                              color="primary"
+                              @click="menu = false">Cancel</v-btn>
+                            <v-btn
+                              text
+                              color="primary"
+                              @click="$refs.menu.save(editedItem.dt_purchase)">OK</v-btn>
+                          </v-date-picker>
+                        </v-menu>
                       </v-flex>
                     </v-layout>
                   </v-container>
@@ -287,12 +324,12 @@
                 </td>
                 <td class="justify-center ">
                   <v-icon
-                          medium
-                          class="mr-2"
-                          @click="editItem(props.item)">edit</v-icon>
+                    medium
+                    class="mr-2"
+                    @click="editItem(props.item)">edit</v-icon>
                   <v-icon
-                          medium
-                          @click="deleteItem(props.item)">delete</v-icon>
+                    medium
+                    @click="deleteItem(props.item)">delete</v-icon>
                 </td>
               </template>
             </v-data-table>
@@ -318,6 +355,8 @@ export default {
   data: () => ({
     snack: false,
     snackColor: '',
+    menu: false,
+    modal: false,
     snackText: '',
     max25chars: v => v.length <= 25 || 'Input too long!',
     pagination: {},
@@ -344,10 +383,14 @@ export default {
       purchase_id: '',
       product_name: '',
       provider_name: '',
+      price: '',
       quantity: '',
+      user_id: '',
       size: '',
+      observation: '',
       total_purchase: '',
-      dt_purchase_format: ''
+      dt_purchase_format: '',
+      dt_purchase: ''
     },
     defaultItem: {
 
@@ -394,7 +437,7 @@ export default {
       .then((response) => this.saveInline(response.data))
       .catch(error => {
         console.log(error)
-        this.cancelInline
+        return this.cancelInline
       })
     },
 
@@ -419,8 +462,8 @@ export default {
       if (this.editedIndex > -1) {
         Object.assign(this.purchaseList[this.editedIndex], this.editedItem)
         let tableItem = this.editedItem
-        let endpoint = `users/update/${this.editedItem.username}`
-        let method = 'patch'
+        let endpoint = `purchase/${this.editedItem.purchase_id}`
+        let method = 'put'
         this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
         .then((response) => {
           console.log(response)
@@ -428,18 +471,18 @@ export default {
         })
         .catch(error => {
           console.log(error)
-          this.cancelInline
+          return this.cancelInline
         })
       } else {
         let tableItem = this.editedItem
         this.purchaseList.push(this.editedItem)
-        let endpoint = `users/new-user`
+        let endpoint = `purchase/`
         let method = 'post'
         this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-        .then((response) => console.log('new user'))
+        .then((response) => console.log(response.data.data))
         .catch(error => {
           console.log(error)
-          this.cancelInline
+          return this.cancelInline
           })
       }
       this.close()
