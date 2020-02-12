@@ -20,7 +20,7 @@
             <v-text-field
               v-model="search"
               append-icon="search"
-              label="Search"
+              label="Busca"
               single-line
               hide-details/>
             <v-dialog
@@ -53,6 +53,14 @@
                         <v-text-field
                           v-model="editedItem.provider_name"
                           label="Fornecedor" />
+                      </v-flex>
+                      <v-flex
+                        xs12
+                        sm6
+                        md4>
+                        <v-text-field
+                          v-model="editedItem.color"
+                          label="Cor" />
                       </v-flex>
                       <v-flex
                         xs12
@@ -119,7 +127,6 @@
                     </v-layout>
                   </v-container>
                 </v-card-text>
-
                 <v-card-actions>
                   <v-spacer/>
                   <v-btn
@@ -137,10 +144,11 @@
             <v-data-table
               :headers="headers"
               :items="purchaseList"
-              :rows-per-page-items ="rowsAmount"
-              :search="search"
+              :total-items="pagination.total"
+              :rows-per-page-items="rowsAmount"
               class="elevation-1"
-            >
+              @input="onPageChange">
+
               <!-- change table header background and text color(or other properties) -->
               <template
                 slot="headerCell"
@@ -226,6 +234,32 @@
                     </template>
                   </v-edit-dialog>
                 </td>
+
+                <td>
+                  <v-edit-dialog
+                    :return-value.sync="props.item.color"
+                    large
+                    lazy
+                    persistent
+                    @save="save"
+                    @cancel="cancelInline"
+                    @open="openInline"
+                    @close="closeInline"
+                  >
+                    <div>{{ props.item.color }}</div>
+                    <template v-slot:input>
+                      <v-text-field
+                        v-model="props.item.color"
+                        :rules="[max25chars]"
+                        label="Edit"
+                        single-line
+                        counter
+                        autofocus
+                      />
+                    </template>
+                  </v-edit-dialog>
+                </td>
+
                 <td>
                   <v-edit-dialog
                     :return-value.sync="props.item.quantity"
@@ -300,7 +334,7 @@
                 </td>
                 <td>
                   <v-edit-dialog
-                    :return-value.sync="props.item.dt_purchase_format"
+                    :return-value.sync="props.item.dt_purchase"
                     large
                     lazy
                     persistent
@@ -309,10 +343,10 @@
                     @open="openInline"
                     @close="closeInline"
                   >
-                    <div>{{ props.item.dt_purchase_format }}</div>
+                    <div>{{ props.item.dt_purchase | friendlyDate }}</div>
                     <template v-slot:input>
                       <v-text-field
-                        v-model="props.item.dt_purchase_format"
+                        v-model="props.item.dt_purchase"
                         :rules="[max25chars]"
                         label="Edit"
                         single-line
@@ -332,16 +366,16 @@
                     @click="deleteItem(props.item)">delete</v-icon>
                 </td>
               </template>
+              <v-snackbar
+                v-model="snack"
+                :timeout="3000"
+                :color="snackColor">
+                {{ snackText }}
+                <v-btn
+                  flat
+                  @click="snack = false">Close</v-btn>
+              </v-snackbar>
             </v-data-table>
-            <v-snackbar
-              v-model="snack"
-              :timeout="3000"
-              :color="snackColor">
-              {{ snackText }}
-              <v-btn
-                flat
-                @click="snack = false">Close</v-btn>
-            </v-snackbar>
           </material-card>
         </div>
       </v-flex>
@@ -351,25 +385,37 @@
 </template>
 
 <script>
+  import moment from 'moment'
 export default {
+  filters: {
+    friendlyDate: function (date) {
+      return moment(date).format('D/MM/YYYY')
+    }
+  },
   data: () => ({
     snack: false,
     snackColor: '',
+    moment: moment,
     menu: false,
     modal: false,
     snackText: '',
     max25chars: v => v.length <= 25 || 'Input too long!',
-    pagination: {},
+    pagination: {
+      current: 1,
+      per_page: 0,
+      total: 0
+    },
     purchaseList: [],
     checkboxAdmin: true,
     checkboxActive: true,
-    rowsAmount: [15, 20, 25, { 'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1 }],
+    rowsAmount: [10, 15, 20, { 'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1 }],
     dialog: false,
     search: '',
     headers: [
       { text: 'ID', align: 'left', value: 'id' },
       { text: 'Produto', value: 'product_name' },
       { text: 'Fornecedor', value: 'provider_name' },
+      { text: 'Cor', value: 'color' },
       { text: 'Preço', value: 'price' },
       { text: 'Quantidade', value: 'quantity' },
       { text: 'Tamanho', value: 'size' },
@@ -387,9 +433,9 @@ export default {
       quantity: '',
       user_id: '',
       size: '',
+      color: '',
       observation: '',
       total_purchase: '',
-      dt_purchase_format: '',
       dt_purchase: ''
     },
     defaultItem: {
@@ -413,13 +459,27 @@ export default {
   },
 
   methods: {
-    getPurchase () {
-      this.$http.get('/purchase')
+    makePagination (meta) {
+      this.pagination = {
+        current: meta.current_page,
+        total: meta.last_page,
+        last: meta.last_page,
+        per_page: meta.per_page
+      }
+    },
+    // eslint-disable-next-line camelcase
+    getPurchase (page_url) {
+      this.$http.get('/purchase?page=' + this.pagination.current)
       .then(response => {
-        console.log(response.data.data.data)
+        console.log(response.data.data)
           this.purchaseList = response.data.data.data
-        })
+          this.makePagination(response.data.data)
+      })
       .catch(error => console.log(error))
+    },
+
+    onPageChange () {
+      this.getPurchase()
     },
 
     // object.assign fills in the empty object with the properties of item
