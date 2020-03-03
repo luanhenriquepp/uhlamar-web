@@ -71,10 +71,18 @@ export default [
       {
         path: 'purchase-table',
         meta: {
-          name: 'Tabela de Compras',
+          name: 'Compras',
           requiresAuth: true
         },
         component: () => import(`@/components/DashViews/PurchaseTable.vue`)
+      },
+      {
+        path: 'sale-table',
+        meta: {
+          name: 'Vendas',
+          requiresAuth: true
+        },
+        component: () => import(`@/components/DashViews/SaleTable.vue`)
       },
       {
         path: 'tablestest',

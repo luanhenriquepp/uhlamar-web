@@ -14,7 +14,7 @@
         <div>
           <material-card
             color="general"
-            title="Compras"
+            title="Vendas"
           >
             <v-spacer/>
             <v-text-field
@@ -31,7 +31,7 @@
                   color="general"
                   dark
                   class="mb-2"
-                  v-on="on">Nova compra</v-btn>
+                  v-on="on">Nova Venda</v-btn>
               </template>
 
               <v-card>
@@ -51,16 +51,16 @@
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.provider_name"
-                          label="Fornecedor" />
+                          v-model="editedItem.buyer_name"
+                          label="Comprador" />
                       </v-flex>
                       <v-flex
                         xs12
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.color"
-                          label="Cor" />
+                          v-model="editedItem.discount_coupon"
+                          label="Cupon" />
                       </v-flex>
                       <v-flex
                         xs12
@@ -75,16 +75,24 @@
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.size"
-                          label="Tamanho"/>
+                          v-model="editedItem.price"
+                          label="Preço"/>
                       </v-flex>
                       <v-flex
                         xs12
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.price"
-                          label="Preço"/>
+                          v-model="editedItem.color"
+                          label="Cor" />
+                      </v-flex>
+                      <v-flex
+                        xs12
+                        sm6
+                        md4>
+                        <v-text-field
+                          v-model="editedItem.size"
+                          label="Tamanho"/>
                       </v-flex>
                       <v-flex
                         xs12
@@ -94,14 +102,14 @@
                           ref="menu"
                           v-model="menu"
                           :close-on-content-click="false"
-                          :return-value.sync="editedItem.dt_purchase"
+                          :return-value.sync="editedItem.dt_sale"
                           transition="scale-transition"
                           offset-y
                           min-width="290px"
                         >
                           <template v-slot:activator="{ on }">
                             <v-text-field
-                              v-model="editedItem.dt_purchase"
+                              v-model="editedItem.dt_sale"
                               label="Selecionar Data"
                               prepend-icon="event"
                               readonly
@@ -109,7 +117,7 @@
                             />
                           </template>
                           <v-date-picker
-                            v-model="editedItem.dt_purchase"
+                            v-model="editedItem.dt_sale"
                             no-title
                             scrollable>
                             <v-spacer/>
@@ -120,7 +128,7 @@
                             <v-btn
                               text
                               color="primary"
-                              @click="$refs.menu.save(editedItem.dt_purchase)">OK</v-btn>
+                              @click="$refs.menu.save(editedItem.dt_sale)">OK</v-btn>
                           </v-date-picker>
                         </v-menu>
                       </v-flex>
@@ -143,7 +151,7 @@
 
             <v-data-table
               :headers="headers"
-              :items="purchaseList"
+              :items="saleList"
               :rows-per-page-items ="rowsAmount"
               :search="search"
               class="elevation-1"
@@ -160,7 +168,7 @@
                 />
               </template>
               <template v-slot:items="props">
-                <td>{{ props.item.purchase_id }}</td>
+                <td>{{ props.item.sale_id }}</td>
                 <td>
                   <v-edit-dialog
                     :return-value.sync="props.item.product_name"
@@ -188,19 +196,19 @@
 
                 <td>
                   <v-edit-dialog
-                    :return-value.sync="props.item.provider_name"
+                    :return-value.sync="props.item.buyer_name"
                     large
                     lazy
                     persistent
-                    @save="save"
+                    @save="saveInline"
                     @cancel="cancelInline"
                     @open="openInline"
                     @close="closeInline"
                   >
-                    <div>{{ props.item.provider_name }}</div>
+                    <div>{{ props.item.buyer_name }}</div>
                     <template v-slot:input>
                       <v-text-field
-                        v-model="props.item.provider_name"
+                        v-model="props.item.buyer_name"
                         :rules="[max25chars]"
                         label="Edit"
                         single-line
@@ -237,7 +245,7 @@
 
                 <td>
                   <v-edit-dialog
-                    :return-value.sync="props.item.color"
+                    :return-value.sync="props.item.discount_coupon"
                     large
                     lazy
                     persistent
@@ -246,10 +254,10 @@
                     @open="openInline"
                     @close="closeInline"
                   >
-                    <div>{{ props.item.color }}</div>
+                    <div>{{ props.item.discount_coupon }}</div>
                     <template v-slot:input>
                       <v-text-field
-                        v-model="props.item.color"
+                        v-model="props.item.discount_coupon"
                         :rules="[max25chars]"
                         label="Edit"
                         single-line
@@ -259,7 +267,6 @@
                     </template>
                   </v-edit-dialog>
                 </td>
-
                 <td>
                   <v-edit-dialog
                     :return-value.sync="props.item.quantity"
@@ -275,6 +282,31 @@
                     <template v-slot:input>
                       <v-text-field
                         v-model="props.item.quantity"
+                        :rules="[max25chars]"
+                        label="Edit"
+                        single-line
+                        counter
+                        autofocus
+                      />
+                    </template>
+                  </v-edit-dialog>
+                </td>
+
+                <td>
+                  <v-edit-dialog
+                    :return-value.sync="props.item.color"
+                    large
+                    lazy
+                    persistent
+                    @save="save"
+                    @cancel="cancelInline"
+                    @open="openInline"
+                    @close="closeInline"
+                  >
+                    <div>{{ props.item.color }}</div>
+                    <template v-slot:input>
+                      <v-text-field
+                        v-model="props.item.color"
                         :rules="[max25chars]"
                         label="Edit"
                         single-line
@@ -310,7 +342,7 @@
                 </td>
                 <td>
                   <v-edit-dialog
-                    :return-value.sync="props.item.total_purchase"
+                    :return-value.sync="props.item.total_sale"
                     large
                     lazy
                     persistent
@@ -319,10 +351,10 @@
                     @open="openInline"
                     @close="closeInline"
                   >
-                    <div>{{ props.item.total_purchase }}</div>
+                    <div>{{ props.item.total_sale }}</div>
                     <template v-slot:input>
                       <v-text-field
-                        v-model="props.item.total_purchase"
+                        v-model="props.item.total_sale"
                         :rules="[max25chars]"
                         label="Edit"
                         single-line
@@ -334,7 +366,7 @@
                 </td>
                 <td>
                   <v-edit-dialog
-                    :return-value.sync="props.item.dt_purchase"
+                    :return-value.sync="props.item.dt_sale"
                     large
                     lazy
                     persistent
@@ -343,10 +375,10 @@
                     @open="openInline"
                     @close="closeInline"
                   >
-                    <div>{{ props.item.dt_purchase | friendlyDate }}</div>
+                    <div>{{ props.item.dt_sale | friendlyDate }}</div>
                     <template v-slot:input>
                       <v-text-field
-                        v-model="props.item.dt_purchase"
+                        v-model="props.item.dt_sale"
                         :rules="[max25chars]"
                         label="Edit"
                         single-line
@@ -405,42 +437,43 @@ export default {
       per_page: 0,
       total: 0
     },
-    purchaseList: [],
+    saleList: [],
     checkboxAdmin: true,
     checkboxActive: true,
     rowsAmount: [10, 15, 20, { 'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1 }],
     dialog: false,
     search: '',
     headers: [
-      { text: 'ID', align: 'left', value: 'id' },
+      { text: 'ID', align: 'left', value: 'sale_id' },
       { text: 'Produto', value: 'product_name' },
-      { text: 'Fornecedor', value: 'provider_name' },
-      { text: 'Cor', value: 'color' },
+      { text: 'Comprador', value: 'buyer_name' },
       { text: 'Preço', value: 'price' },
+      { text: 'Cupon', value: 'discount_coupon' },
       { text: 'Quantidade', value: 'quantity' },
+      { text: 'Cor', value: 'color' },
       { text: 'Tamanho', value: 'size' },
-      { text: 'Total', value: 'total_purchase' },
-      { text: 'Data', value: 'dt_purchase' },
+      { text: 'Total', value: 'total_sale' },
+      { text: 'Data', value: 'dt_sale' },
       { text: 'Ações', value: 'actions', sortable: false }
 
     ],
     filter: {
       product_name: '',
-      provider_name: ''
+      buyer_name: ''
     },
     editedIndex: -1,
     editedItem: {
-      purchase_id: '',
+      user_id: '',
+      buyer_name: '',
+      discount_coupon: '',
+      dt_sale: '',
+      size: '',
       product_name: '',
-      provider_name: '',
+      color: '',
       price: '',
       quantity: '',
-      user_id: '',
-      size: '',
-      color: '',
-      observation: '',
-      total_purchase: '',
-      dt_purchase: ''
+      total_sale: '',
+      observation: ''
     },
     defaultItem: {
 
@@ -449,7 +482,7 @@ export default {
 
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? 'Nova Compra' : 'Editar Compra'
+      return this.editedIndex === -1 ? 'Nova Venda' : 'Editar vENDA'
     }
   },
 
@@ -473,10 +506,10 @@ export default {
     },
 
     getPurchase () {
-      this.$http.get('/purchase?page=' + this.pagination.current)
+      this.$http.get('/sale?page=' + this.pagination.current)
       .then(response => {
         console.log(response.data.data)
-          this.purchaseList = response.data.data.data
+          this.saleList = response.data.data.data
           this.makePagination(response.data.data)
       })
       .catch(error => console.log(error))
@@ -484,7 +517,7 @@ export default {
 
     // object.assign fills in the empty object with the properties of item
     editItem (item, dbox = true) {
-      this.editedIndex = this.purchaseList.indexOf(item)
+      this.editedIndex = this.saleList.indexOf(item)
       item.isAdmin = this.checkboxAdmin
       item.isActive = this.checkboxActive
       this.editedItem = Object.assign({}, item)
@@ -515,10 +548,10 @@ export default {
     },
 
     deleteItem (item) {
-      const index = this.purchaseList.indexOf(item)
-      confirm('Are you sure you want to delete this item?') && this.purchaseList.splice(index, 1)
+      const index = this.saleList.indexOf(item)
+      confirm('Are you sure you want to delete this item?') && this.saleList.splice(index, 1)
       this.editedItem = Object.assign({}, item)
-      let endpoint = `purchase/${this.editedItem.purchase_id}`
+      let endpoint = `sale/${this.editedItem.sale_id}`
       let method = 'DELETE'
       this.callTableAction(item, endpoint, method)
       this.getPurchase()
@@ -534,9 +567,9 @@ export default {
 
     save () {
       if (this.editedIndex > -1) {
-        Object.assign(this.purchaseList[this.editedIndex], this.editedItem)
+        Object.assign(this.saleList[this.editedIndex], this.editedItem)
         let tableItem = this.editedItem
-        let endpoint = `purchase/${this.editedItem.purchase_id}`
+        let endpoint = `sale/${this.editedItem.sale_id}`
         let method = 'put'
         this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
         .then((response) => {
@@ -550,8 +583,8 @@ export default {
         })
       } else {
         let tableItem = this.editedItem
-        this.purchaseList.push(this.editedItem)
-        let endpoint = `purchase/`
+        this.saleList.push(this.editedItem)
+        let endpoint = `sale/`
         let method = 'post'
         this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
         .then((response) => console.log(response.data.data))
