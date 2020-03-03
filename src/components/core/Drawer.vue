@@ -91,7 +91,12 @@ export default {
       {
         to: '/dashboard/purchase-table',
         icon: 'mdi-table-edit',
-        text: 'Tabela de Compras'
+        text: 'Compras'
+      },
+      {
+        to: '/dashboard/sale-table',
+        icon: 'mdi-table-edit',
+        text: 'Vendas'
       },
       // {
       //   to: '/dashboard/typography',
