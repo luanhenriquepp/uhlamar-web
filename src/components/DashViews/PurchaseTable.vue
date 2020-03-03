@@ -18,7 +18,7 @@
           >
             <v-spacer/>
             <v-text-field
-              v-model="filter"
+              v-model="search"
               append-icon="search"
               label="Busca"
               single-line
