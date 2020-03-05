@@ -2,20 +2,13 @@
   <v-container
     fill-height
     fluid
-    grid-list-xl
-  >
-    <v-layout
-      justify-center
-      wrap
-    >
-      <v-flex
-        md12
-      >
+    grid-list-xl>
+    <v-layout justify-center wrap>
+      <v-flex md12>
         <div>
           <material-card
             color="general"
-            title="Compras"
-          >
+            title="Compras">
             <v-spacer/>
             <v-text-field
               v-model="search"
@@ -31,65 +24,45 @@
                   color="general"
                   dark
                   class="mb-2"
-                  v-on="on">Nova compra</v-btn>
+                  v-on="on">Nova compra
+                </v-btn>
               </template>
 
               <v-card>
                 <v-card-text>
-                  <v-container grid-list-md >
+                  <v-container grid-list-md>
                     <v-layout wrap>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
+                      <v-flex xs12 sm6 md4>
                         <v-text-field
                           v-model="editedItem.product_name"
-                          label="Produto" />
+                          label="Produto"/>
                       </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
+                      <v-flex xs12 sm6 md4>
                         <v-text-field
                           v-model="editedItem.provider_name"
-                          label="Fornecedor" />
+                          label="Fornecedor"/>
                       </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
+                      <v-flex xs12 sm6 md4>
                         <v-text-field
                           v-model="editedItem.color"
-                          label="Cor" />
+                          label="Cor"/>
                       </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
+                      <v-flex xs12 sm6 md4>
                         <v-text-field
                           v-model="editedItem.quantity"
                           label="Quantidade"/>
                       </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
+                      <v-flex xs12 sm6 md4>
                         <v-text-field
                           v-model="editedItem.size"
                           label="Tamanho"/>
                       </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
+                      <v-flex xs12 sm6 md4>
                         <v-text-field
                           v-model="editedItem.price"
                           label="Preço"/>
                       </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
+                      <v-flex xs12 sm6 md4>
                         <v-menu
                           ref="menu"
                           v-model="menu"
@@ -116,11 +89,13 @@
                             <v-btn
                               text
                               color="primary"
-                              @click="menu = false">Cancel</v-btn>
+                              @click="menu = false">Cancel
+                            </v-btn>
                             <v-btn
                               text
                               color="primary"
-                              @click="$refs.menu.save(editedItem.dt_purchase)">OK</v-btn>
+                              @click="$refs.menu.save(editedItem.dt_purchase)">OK
+                            </v-btn>
                           </v-date-picker>
                         </v-menu>
                       </v-flex>
@@ -132,28 +107,30 @@
                   <v-btn
                     color="blue darken-1"
                     flat
-                    @click="close">Cancel</v-btn>
+                    @click="close">Cancel
+                  </v-btn>
                   <v-btn
                     color="blue darken-1"
                     flat
-                    @click="save">Save</v-btn>
+                    @click="save">Save
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
 
             <v-data-table
+              v-if="pagination.total > pagination.per_page"
               :headers="headers"
-              :items="purchaseList"
-              :rows-per-page-items ="rowsAmount"
+              :items="data"
               :search="search"
+              :loading="loading"
+              :items-per-page="pagination.per_page"
+              :server-items-length="pagination.total"
               class="elevation-1"
+              hide-actions
             >
-
               <!-- change table header background and text color(or other properties) -->
-              <template
-                slot="headerCell"
-                slot-scope="{ header }"
-              >
+              <template slot="headerCell" slot-scope="{ header }">
                 <span
                   class="subheading font-weight-light text-general text--darken-3"
                   v-text="header.text"
@@ -360,10 +337,12 @@
                   <v-icon
                     medium
                     class="mr-2"
-                    @click="editItem(props.item)">edit</v-icon>
+                    @click="editItem(props.item)">edit
+                  </v-icon>
                   <v-icon
                     medium
-                    @click="deleteItem(props.item)">delete</v-icon>
+                    @click="deleteItem(props.item)">delete
+                  </v-icon>
                 </td>
               </template>
               <v-snackbar
@@ -371,11 +350,15 @@
                 :timeout="3000"
                 :color="snackColor">
                 {{ snackText }}
-                <v-btn
-                  flat
-                  @click="snack = false">Close</v-btn>
+                <v-btn flat @click="snack = false">Close</v-btn>
               </v-snackbar>
             </v-data-table>
+            <div class="text-xs-center">
+              <v-pagination
+                color="general"
+                v-model="currentPage"
+                :length="pagination.last_page"/>
+            </div>
           </material-card>
         </div>
       </v-flex>
@@ -386,6 +369,7 @@
 
 <script>
   import moment from 'moment'
+
 export default {
   filters: {
     friendlyDate: function (date) {
@@ -393,41 +377,33 @@ export default {
     }
   },
   data: () => ({
+    loading: true,
+    pagination: {},
     snack: false,
+    currentPage: 1,
     snackColor: '',
     moment: moment,
     menu: false,
     modal: false,
     snackText: '',
     max25chars: v => v.length <= 25 || 'Input too long!',
-    pagination: {
-      current: 1,
-      per_page: 0,
-      total: 0
-    },
-    purchaseList: [],
-    checkboxAdmin: true,
-    checkboxActive: true,
-    rowsAmount: [10, 15, 20, { 'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1 }],
+    data: '',
+    rowsAmount: [10, 15, 20, {'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1}],
     dialog: false,
     search: '',
     headers: [
-      { text: 'ID', align: 'left', value: 'id' },
-      { text: 'Produto', value: 'product_name' },
-      { text: 'Fornecedor', value: 'provider_name' },
-      { text: 'Cor', value: 'color' },
-      { text: 'Preço', value: 'price' },
-      { text: 'Quantidade', value: 'quantity' },
-      { text: 'Tamanho', value: 'size' },
-      { text: 'Total', value: 'total_purchase' },
-      { text: 'Data', value: 'dt_purchase' },
-      { text: 'Ações', value: 'actions', sortable: false }
+      {text: 'ID', align: 'left', value: 'id'},
+      {text: 'Produto', value: 'product_name'},
+      {text: 'Fornecedor', value: 'provider_name'},
+      {text: 'Preço', value: 'price'},
+      {text: 'Cor', value: 'color'},
+      {text: 'Quantidade', value: 'quantity'},
+      {text: 'Tamanho', value: 'size'},
+      {text: 'Total', value: 'total_purchase'},
+      {text: 'Data', value: 'dt_purchase'},
+      {text: 'Ações', value: 'actions', sortable: false}
 
     ],
-    filter: {
-      product_name: '',
-      provider_name: ''
-    },
     editedIndex: -1,
     editedItem: {
       purchase_id: '',
@@ -442,149 +418,139 @@ export default {
       total_purchase: '',
       dt_purchase: ''
     },
-    defaultItem: {
-
-    }
   }),
 
   computed: {
-    formTitle () {
+    formTitle() {
       return this.editedIndex === -1 ? 'Nova Compra' : 'Editar Compra'
     }
   },
 
   watch: {
-    dialog (val) {
-      val || this.close()
+    currentPage: function (val) {
+      this.getPurchase('?page=' + val)
     }
   },
-  created () {
-    this.getPurchase()
+  mounted() {
+    return this.getPurchase();
   },
 
   methods: {
-    makePagination (meta) {
-      this.pagination = {
-        current: meta.current_page,
-        total: meta.last_page,
-        last: meta.last_page,
-        per_page: meta.per_page
-      }
+    getPurchase(filtro = '') {
+      this.$http.get('/purchase' + filtro)
+        .then(response => {
+          this.pagination = response.data.data;
+          this.data = response.data.data.data;
+        })
+        .catch(error => console.log(error))
     },
 
-    getPurchase () {
-      this.$http.get('/purchase?page=' + this.pagination.current)
-      .then(response => {
-        console.log(response.data.data)
-          this.purchaseList = response.data.data.data
-          this.makePagination(response.data.data)
-      })
-      .catch(error => console.log(error))
-    },
-
-    // object.assign fills in the empty object with the properties of item
-    editItem (item, dbox = true) {
-      this.editedIndex = this.purchaseList.indexOf(item)
-      item.isAdmin = this.checkboxAdmin
-      item.isActive = this.checkboxActive
-      this.editedItem = Object.assign({}, item)
+    editItem(item, dbox = true) {
+      this.editedIndex = this.data.indexOf(item);
+      item.isAdmin = this.checkboxAdmin;
+      item.isActive = this.checkboxActive;
+      this.editedItem = Object.assign({}, item);
       this.dialog = dbox
     },
 
-    verificaTamanho (value) {
+    verificaTamanho(value) {
       switch (value) {
         case 'P':
-          return 'Pequeno'
+          return 'Pequeno';
         case 'M':
-          return 'Médio'
+          return 'Médio';
         case 'G':
-          return 'Grande'
+          return 'Grande';
         default:
           return 'Único'
       }
     },
 
-    callTableAction (item, endpoint, method) {
-      let tableItem = this.editedItem
-      this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-      .then((response) => this.saveInline(response.data))
-      .catch(error => {
-        console.log(error)
-        return this.cancelInline
-      })
+    callTableAction(item, endpoint, method) {
+      let tableItem = this.editedItem;
+      this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+        .then((response) => this.saveInline(response.data))
+        .catch(error => {
+          console.log(error);
+          return this.cancelInline
+        })
     },
 
-    deleteItem (item) {
-      const index = this.purchaseList.indexOf(item)
-      confirm('Are you sure you want to delete this item?') && this.purchaseList.splice(index, 1)
-      this.editedItem = Object.assign({}, item)
-      let endpoint = `purchase/${this.editedItem.purchase_id}`
-      let method = 'DELETE'
-      this.callTableAction(item, endpoint, method)
+    deleteItem(item) {
+      const index = this.data.indexOf(item);
+      confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1);
+      this.editedItem = Object.assign({}, item);
+      let endpoint = `purchase/${this.editedItem.purchase_id}`;
+      let method = 'DELETE';
+      this.callTableAction(item, endpoint, method);
       this.getPurchase()
     },
 
-    close () {
-      this.dialog = false
+    close() {
+      this.dialog = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1
       }, 300)
     },
 
-    save () {
+    save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.purchaseList[this.editedIndex], this.editedItem)
-        let tableItem = this.editedItem
-        let endpoint = `purchase/${this.editedItem.purchase_id}`
-        let method = 'put'
-        this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-        .then((response) => {
-          console.log(response)
-          this.saveInline(response.data)
-          this.getPurchase()
-        })
-        .catch(error => {
-          console.log(error)
-          return this.cancelInline
-        })
+        Object.assign(this.data[this.editedIndex], this.editedItem);
+        let tableItem = this.editedItem;
+        let endpoint = `purchase/${this.editedItem.purchase_id}`;
+        let method = 'put';
+        this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+          .then((response) => {
+            console.log(response);
+            this.saveInline(response.data);
+            this.getPurchase()
+          })
+          .catch(error => {
+            console.log(error);
+            return this.cancelInline
+          })
       } else {
-        let tableItem = this.editedItem
-        this.purchaseList.push(this.editedItem)
-        let endpoint = `purchase/`
-        let method = 'post'
-        this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-        .then((response) => console.log(response.data.data))
-        .catch(error => {
-          this.getPurchase()
-          console.log(error)
-          return this.cancelInline
+        let tableItem = this.editedItem;
+        this.data.push(this.editedItem);
+        let endpoint = `purchase/`;
+        let method = 'post';
+        this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+          .then((response) => console.log(response.data.data))
+          .catch(error => {
+            this.getPurchase();
+            console.log(error);
+            return this.cancelInline
           })
       }
       this.close()
     },
-    // toasts/snackbar messages for actions
-    saveInline (data) {
-      this.snack = true
-      this.snackColor = 'success'
+
+    saveInline(data) {
+      this.snack = true;
+      this.snackColor = 'success';
       this.snackText = data.message
     },
-    cancelInline () {
-      this.snack = true
-      this.snackColor = 'error'
+
+    cancelInline() {
+      this.snack = true;
+      this.snackColor = 'error';
       this.snackText = 'Canceled'
     },
-    reset () {
-      this.snack = true
-      this.snackColor = 'success'
+
+    reset() {
+      this.snack = true;
+      this.snackColor = 'success';
       this.snackText = 'Data reset to default'
     },
-    openInline () {
-      this.snack = true
-      this.snackColor = 'info'
+
+    openInline() {
+      this.snack = true;
+      this.snackColor = 'info';
       this.snackText = 'Dialog opened'
     },
-    closeInline () {
+
+    closeInline() {
       console.log('Dialog closed')
     }
   }
@@ -592,10 +558,11 @@ export default {
 </script>
 
 <style>
-table.v-table thead tr {
-  color: red !important;
-}
-tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, .05);
-}
+  table.v-table thead tr {
+    color: red !important;
+  }
+
+  tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, .05);
+  }
 </style>
