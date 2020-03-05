@@ -18,7 +18,7 @@
           >
             <v-spacer/>
             <v-text-field
-              v-model="filter"
+              v-model="search"
               append-icon="search"
               label="Busca"
               single-line
@@ -31,12 +31,13 @@
                   color="general"
                   dark
                   class="mb-2"
-                  v-on="on">Nova Venda</v-btn>
+                  v-on="on">Nova Venda
+                </v-btn>
               </template>
 
               <v-card>
                 <v-card-text>
-                  <v-container grid-list-md >
+                  <v-container grid-list-md>
                     <v-layout wrap>
                       <v-flex
                         xs12
@@ -44,7 +45,7 @@
                         md4>
                         <v-text-field
                           v-model="editedItem.product_name"
-                          label="Produto" />
+                          label="Produto"/>
                       </v-flex>
                       <v-flex
                         xs12
@@ -52,7 +53,7 @@
                         md4>
                         <v-text-field
                           v-model="editedItem.buyer_name"
-                          label="Comprador" />
+                          label="Comprador"/>
                       </v-flex>
                       <v-flex
                         xs12
@@ -60,7 +61,7 @@
                         md4>
                         <v-text-field
                           v-model="editedItem.discount_coupon"
-                          label="Cupon" />
+                          label="Cupon"/>
                       </v-flex>
                       <v-flex
                         xs12
@@ -84,7 +85,7 @@
                         md4>
                         <v-text-field
                           v-model="editedItem.color"
-                          label="Cor" />
+                          label="Cor"/>
                       </v-flex>
                       <v-flex
                         xs12
@@ -124,11 +125,13 @@
                             <v-btn
                               text
                               color="primary"
-                              @click="menu = false">Cancel</v-btn>
+                              @click="menu = false">Cancel
+                            </v-btn>
                             <v-btn
                               text
                               color="primary"
-                              @click="$refs.menu.save(editedItem.dt_sale)">OK</v-btn>
+                              @click="$refs.menu.save(editedItem.dt_sale)">OK
+                            </v-btn>
                           </v-date-picker>
                         </v-menu>
                       </v-flex>
@@ -140,21 +143,27 @@
                   <v-btn
                     color="blue darken-1"
                     flat
-                    @click="close">Cancel</v-btn>
+                    @click="close">Cancel
+                  </v-btn>
                   <v-btn
                     color="blue darken-1"
                     flat
-                    @click="save">Save</v-btn>
+                    @click="save">Save
+                  </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
 
             <v-data-table
+              v-if="pagination.total > pagination.per_page"
               :headers="headers"
-              :items="saleList"
-              :rows-per-page-items ="rowsAmount"
+              :items="data"
               :search="search"
+              :loading="loading"
+              :items-per-page="pagination.per_page"
+              :server-items-length="pagination.total"
               class="elevation-1"
+              hide-actions
             >
 
               <!-- change table header background and text color(or other properties) -->
@@ -392,10 +401,12 @@
                   <v-icon
                     medium
                     class="mr-2"
-                    @click="editItem(props.item)">edit</v-icon>
+                    @click="editItem(props.item)">edit
+                  </v-icon>
                   <v-icon
                     medium
-                    @click="deleteItem(props.item)">delete</v-icon>
+                    @click="deleteItem(props.item)">delete
+                  </v-icon>
                 </td>
               </template>
               <v-snackbar
@@ -405,9 +416,16 @@
                 {{ snackText }}
                 <v-btn
                   flat
-                  @click="snack = false">Close</v-btn>
+                  @click="snack = false">Close
+                </v-btn>
               </v-snackbar>
             </v-data-table>
+            <div class="text-xs-center">
+              <v-pagination
+                color="general"
+                v-model="currentPage"
+                :length="pagination.last_page"/>
+            </div>
           </material-card>
         </div>
       </v-flex>
@@ -418,217 +436,205 @@
 
 <script>
   import moment from 'moment'
-export default {
-  filters: {
-    friendlyDate: function (date) {
-      return moment(date).format('D/MM/YYYY')
-    }
-  },
-  data: () => ({
-    snack: false,
-    snackColor: '',
-    moment: moment,
-    menu: false,
-    modal: false,
-    snackText: '',
-    max25chars: v => v.length <= 25 || 'Input too long!',
-    pagination: {
-      current: 1,
-      per_page: 0,
-      total: 0
+
+  export default {
+    filters: {
+      friendlyDate: function (date) {
+        return moment(date).format('D/MM/YYYY')
+      }
     },
-    saleList: [],
-    checkboxAdmin: true,
-    checkboxActive: true,
-    rowsAmount: [10, 15, 20, { 'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1 }],
-    dialog: false,
-    search: '',
-    headers: [
-      { text: 'ID', align: 'left', value: 'sale_id' },
-      { text: 'Produto', value: 'product_name' },
-      { text: 'Comprador', value: 'buyer_name' },
-      { text: 'Preço', value: 'price' },
-      { text: 'Cupon', value: 'discount_coupon' },
-      { text: 'Quantidade', value: 'quantity' },
-      { text: 'Cor', value: 'color' },
-      { text: 'Tamanho', value: 'size' },
-      { text: 'Total', value: 'total_sale' },
-      { text: 'Data', value: 'dt_sale' },
-      { text: 'Ações', value: 'actions', sortable: false }
+    data: () => ({
+      snack: false,
+      snackColor: '',
+      moment: moment,
+      menu: false,
+      modal: false,
+      snackText: '',
+      currentPage: 1,
+      max25chars: v => v.length <= 25 || 'Input too long!',
+      pagination: {},
+      data: '',
+      checkboxAdmin: true,
+      checkboxActive: true,
+      rowsAmount: [10, 15, 20, {'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1}],
+      dialog: false,
+      search: '',
+      headers: [
+        {text: 'ID', align: 'left', value: 'sale_id'},
+        {text: 'Produto', value: 'product_name'},
+        {text: 'Comprador', value: 'buyer_name'},
+        {text: 'Preço', value: 'price'},
+        {text: 'Cupon', value: 'discount_coupon'},
+        {text: 'Quantidade', value: 'quantity'},
+        {text: 'Cor', value: 'color'},
+        {text: 'Tamanho', value: 'size'},
+        {text: 'Total', value: 'total_sale'},
+        {text: 'Data', value: 'dt_sale'},
+        {text: 'Ações', value: 'actions', sortable: false}
 
-    ],
-    filter: {
-      product_name: '',
-      buyer_name: ''
-    },
-    editedIndex: -1,
-    editedItem: {
-      user_id: '',
-      buyer_name: '',
-      discount_coupon: '',
-      dt_sale: '',
-      size: '',
-      product_name: '',
-      color: '',
-      price: '',
-      quantity: '',
-      total_sale: '',
-      observation: ''
-    },
-    defaultItem: {
+      ],
+      editedIndex: -1,
+      editedItem: {
+        user_id: '',
+        buyer_name: '',
+        discount_coupon: '',
+        dt_sale: '',
+        size: '',
+        product_name: '',
+        color: '',
+        price: '',
+        quantity: '',
+        total_sale: '',
+        observation: ''
+      },
+      defaultItem: {}
+    }),
 
-    }
-  }),
-
-  computed: {
-    formTitle () {
-      return this.editedIndex === -1 ? 'Nova Venda' : 'Editar vENDA'
-    }
-  },
-
-  watch: {
-    dialog (val) {
-      val || this.close()
-    }
-  },
-  created () {
-    this.getPurchase()
-  },
-
-  methods: {
-    makePagination (meta) {
-      this.pagination = {
-        current: meta.current_page,
-        total: meta.last_page,
-        last: meta.last_page,
-        per_page: meta.per_page
+    computed: {
+      formTitle() {
+        return this.editedIndex === -1 ? 'Nova Venda' : 'Editar vENDA'
       }
     },
 
-    getPurchase () {
-      this.$http.get('/sale?page=' + this.pagination.current)
-      .then(response => {
-        console.log(response.data.data)
-          this.saleList = response.data.data.data
-          this.makePagination(response.data.data)
-      })
-      .catch(error => console.log(error))
-    },
-
-    // object.assign fills in the empty object with the properties of item
-    editItem (item, dbox = true) {
-      this.editedIndex = this.saleList.indexOf(item)
-      item.isAdmin = this.checkboxAdmin
-      item.isActive = this.checkboxActive
-      this.editedItem = Object.assign({}, item)
-      this.dialog = dbox
-    },
-
-    verificaTamanho (value) {
-      switch (value) {
-        case 'P':
-          return 'Pequeno'
-        case 'M':
-          return 'Médio'
-        case 'G':
-          return 'Grande'
-        default:
-          return 'Único'
+    watch: {
+      dialog(val) {
+        val || this.close()
       }
     },
-
-    callTableAction (item, endpoint, method) {
-      let tableItem = this.editedItem
-      this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-      .then((response) => this.saveInline(response.data))
-      .catch(error => {
-        console.log(error)
-        return this.cancelInline
-      })
+    watch: {
+      currentPage: function (val) {
+        this.getSale('?page=' + val)
+      }
     },
-
-    deleteItem (item) {
-      const index = this.saleList.indexOf(item)
-      confirm('Are you sure you want to delete this item?') && this.saleList.splice(index, 1)
-      this.editedItem = Object.assign({}, item)
-      let endpoint = `sale/${this.editedItem.sale_id}`
-      let method = 'DELETE'
-      this.callTableAction(item, endpoint, method)
-      this.getPurchase()
+    mounted() {
+      return this.getSale();
     },
-
-    close () {
-      this.dialog = false
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      }, 300)
-    },
-
-    save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.saleList[this.editedIndex], this.editedItem)
-        let tableItem = this.editedItem
-        let endpoint = `sale/${this.editedItem.sale_id}`
-        let method = 'put'
-        this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-        .then((response) => {
-          console.log(response)
-          this.saveInline(response.data)
-          this.getPurchase()
-        })
-        .catch(error => {
-          console.log(error)
-          return this.cancelInline
-        })
-      } else {
-        let tableItem = this.editedItem
-        this.saleList.push(this.editedItem)
-        let endpoint = `sale/`
-        let method = 'post'
-        this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-        .then((response) => console.log(response.data.data))
-        .catch(error => {
-          this.getPurchase()
-          console.log(error)
-          return this.cancelInline
+    
+    methods: {
+      
+      getSale(filtro = '') {
+        this.$http.get('/sale' + filtro)
+          .then(response => {
+            this.pagination = response.data.data;
+            this.data = response.data.data.data;
           })
+          .catch(error => console.log(error))
+      },
+
+      editItem(item, dbox = true) {
+        this.editedIndex = this.data.indexOf(item);
+        item.isAdmin = this.checkboxAdmin;
+        item.isActive = this.checkboxActive;
+        this.editedItem = Object.assign({}, item);
+        this.dialog = dbox
+      },
+
+      verificaTamanho(value) {
+        switch (value) {
+          case 'P':
+            return 'Pequeno';
+          case 'M':
+            return 'Médio';
+          case 'G':
+            return 'Grande';
+          default:
+            return 'Único'
+        }
+      },
+
+      callTableAction(item, endpoint, method) {
+        let tableItem = this.editedItem;
+        this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+          .then((response) => this.saveInline(response.data))
+          .catch(error => {
+            console.log(error);
+            return this.cancelInline
+          })
+      },
+
+      deleteItem(item) {
+        const index = this.data.indexOf(item);
+        confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1);
+        this.editedItem = Object.assign({}, item);
+        let endpoint = `sale/${this.editedItem.sale_id}`;
+        let method = 'DELETE';
+        this.callTableAction(item, endpoint, method);
+        this.getSale()
+      },
+
+      close() {
+        this.dialog = false;
+        setTimeout(() => {
+          this.editedItem = Object.assign({}, this.defaultItem);
+          this.editedIndex = -1
+        }, 300)
+      },
+
+      save() {
+        if (this.editedIndex > -1) {
+          Object.assign(this.data[this.editedIndex], this.editedItem);
+          let tableItem = this.editedItem;
+          let endpoint = `sale/${this.editedItem.sale_id}`;
+          let method = 'put';
+          this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+            .then((response) => {
+              console.log(response);
+              this.saveInline(response.data);
+              this.getSale()
+            })
+            .catch(error => {
+              console.log(error);
+              return this.cancelInline
+            })
+        } else {
+          let tableItem = this.editedItem;
+          this.data.push(this.editedItem);
+          let endpoint = `sale/`;
+          let method = 'post';
+          this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+            .then((response) => console.log(response.data.data))
+            .catch(error => {
+              this.getSale();
+              console.log(error);
+              return this.cancelInline
+            })
+        }
+        this.close()
+      },
+      // toasts/snackbar messages for actions
+      saveInline(data) {
+        this.snack = true;
+        this.snackColor = 'success';
+        this.snackText = data.message
+      },
+      cancelInline() {
+        this.snack = true;
+        this.snackColor = 'error';
+        this.snackText = 'Canceled'
+      },
+      reset() {
+        this.snack = true;
+        this.snackColor = 'success';
+        this.snackText = 'Data reset to default'
+      },
+      openInline() {
+        this.snack = true;
+        this.snackColor = 'info';
+        this.snackText = 'Dialog opened'
+      },
+      closeInline() {
+        console.log('Dialog closed')
       }
-      this.close()
-    },
-    // toasts/snackbar messages for actions
-    saveInline (data) {
-      this.snack = true
-      this.snackColor = 'success'
-      this.snackText = data.message
-    },
-    cancelInline () {
-      this.snack = true
-      this.snackColor = 'error'
-      this.snackText = 'Canceled'
-    },
-    reset () {
-      this.snack = true
-      this.snackColor = 'success'
-      this.snackText = 'Data reset to default'
-    },
-    openInline () {
-      this.snack = true
-      this.snackColor = 'info'
-      this.snackText = 'Dialog opened'
-    },
-    closeInline () {
-      console.log('Dialog closed')
     }
   }
-}
 </script>
 
 <style>
-table.v-table thead tr {
-  color: red !important;
-}
-tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, .05);
-}
+  table.v-table thead tr {
+    color: red !important;
+  }
+
+  tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, .05);
+  }
 </style>
