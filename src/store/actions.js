@@ -10,17 +10,13 @@ export default {
         .then(response => {
           const token = response.data.token
           const user = response.data.username
-          console.log(response)
-          // storing jwt in localStorage. https cookie is safer place to store
           localStorage.setItem('token', token)
           localStorage.setItem('user', user)
           axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
-          // mutation to change state properties to the values passed along
           commit('auth_success', { token, user })
           resolve(response)
         })
         .catch(err => {
-          console.log('login error')
           commit('auth_error')
           localStorage.removeItem('token')
           reject(err)
@@ -44,16 +40,13 @@ export default {
         commit('auth_success', { token })
       })
       .catch(error => {
-        console.log('refresh token error')
         commit('logout')
         localStorage.removeItem('token')
-        console.log(error)
       })
   },
   getTableList ({ commit }, tableName) {
     this.$http.get(`/${tableName}`)
       .then(response => {
-        console.log(response)
         let tableList = response.data.Keys
         commit('setTableList', { tableList })
       })
@@ -67,32 +60,8 @@ export default {
           resolve(response)
         })
         .catch(error => {
-          console.log(error)
           reject(error)
         })
     })
   },
-
-  // autoRefreshToken ({ commit }) {
-  //   return new Promise((resolve, reject) => {
-  //     setInterval(function () {
-  //       // code goes here that will be run every 20 minutes.
-  //       axios.get('/refresh')
-  //         .then(response => {
-  //           const token = response.data.access_token
-  //           localStorage.setItem('token', token)
-  //           axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
-  //           commit('auth_success', { token })
-  //           resolve(response)
-  //         })
-  //         .catch(error => {
-  //           console.log('refresh token error')
-  //           console.log(error)
-  //           reject(error)
-  //         })
-  //     }, 1200000)
-  //   }
-  //   )
-  // },
-
 }
