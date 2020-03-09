@@ -516,9 +516,11 @@ export default {
         let endpoint = `purchase`;
         let method = 'POST';
         this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
-          .then((response) => console.log(response.data.data))
+          .then((response) => {
+              this.saveInline(response.data);
+              this.getPurchase()
+          })
           .catch(error => {
-            this.getPurchase();
             console.log(error);
             return this.cancelInline
           })
