@@ -9,7 +9,7 @@ export default {
       axios.post('login', { email: userData.email, password: userData.password })
         .then(response => {
           const token = response.data.token
-          const user = response.data.username
+          const user = response.data.name
           localStorage.setItem('token', token)
           localStorage.setItem('user', user)
           axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
