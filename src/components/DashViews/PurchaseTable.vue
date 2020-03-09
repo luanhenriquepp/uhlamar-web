@@ -513,7 +513,7 @@ export default {
       } else {
         let tableItem = this.editedItem;
         this.data.push(this.editedItem);
-        let endpoint = `purchase/`;
+        let endpoint = `purchase`;
         let method = 'POST';
         this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
           .then((response) => console.log(response.data.data))
