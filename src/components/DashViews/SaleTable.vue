@@ -193,7 +193,6 @@
               hide-actions
             >
 
-              <!-- change table header background and text color(or other properties) -->
               <template
                 slot="headerCell"
                 slot-scope="{ header }"
@@ -205,32 +204,50 @@
               </template>
               <template v-slot:items="props">
                 <td>
-                  {{ props.item.product_name }}
-                </td>
-                <td>
-                  {{ props.item.buyer_name }}
-                </td>
-                <td>
-                  R$ {{ props.item.price }}
-                </td>
-                <td>
-                  {{ props.item.quantity }}
-                </td>
-                <td>
-                  R$ {{ props.item.total_sale }}
-                </td>
-                <td>
-                  {{ props.item.discount_coupon }}
-                </td>
+                  <div>
+                    {{ props.item.product_name }}
+                  </div>
 
-                <td>
-                  {{ props.item.color }}
                 </td>
                 <td>
-                  {{ checkSize(props.item.size) }}
+                 <div>
+                   {{ props.item.buyer_name }}
+                 </div>
                 </td>
                 <td>
-                  {{ props.item.dt_sale | friendlyDate }}
+                 <div>
+                   R$ {{ props.item.price }}
+                 </div>
+                </td>
+                <td>
+                 <div>
+                   {{ props.item.quantity }}
+                 </div>
+                </td>
+                <td>
+                 <div>
+                   R$ {{ props.item.total_sale }}
+                 </div>
+                </td>
+                <td>
+                  <div>
+                    {{ props.item.discount_coupon }}
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    {{ props.item.color }}
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    {{ checkSize(props.item.size) }}
+                  </div>
+                </td>
+                <td>
+                  <div>
+                    {{ props.item.dt_sale | friendlyDate }}
+                  </div>
                 </td>
                 <td class="justify-center ">
                   <v-icon
