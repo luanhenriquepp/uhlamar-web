@@ -183,7 +183,6 @@
             </v-dialog>
 
             <v-data-table
-              v-if="pagination.total > pagination.per_page"
               :headers="headers"
               :items="data"
               :loading="loading"
@@ -258,6 +257,7 @@
             </v-data-table>
             <div class="text-xs-center">
               <v-pagination
+                v-if="pagination.total > pagination.per_page"
                 color="general"
                 v-model="currentPage"
                 :length="pagination.last_page"/>
