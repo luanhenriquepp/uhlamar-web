@@ -450,6 +450,10 @@
     padding: 0 25px !important;
 
   }
+  table.v-table tbody td {
+    font-size: 12px !important;
+    font-weight: 300;
+  }
 
   table.v-table tbody td:first-child {
     padding: 0 0px !important;

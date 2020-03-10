@@ -531,6 +531,10 @@
     padding: 0 10px !important;
   }
 
+  table.v-table tbody td {
+    font-size: 12px !important;
+    font-weight: 300;
+  }
   table.v-table tbody td:first-child,
   table.v-table tbody td:not(:first-child),
   table.v-table tbody th:first-child,
