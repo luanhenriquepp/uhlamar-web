@@ -351,13 +351,13 @@
         this.getSale('?page=' + val)
       },
       filterProductName: function (filter) {
-        this.getPurchase('?search=product_name:' + filter)
+        this.getSale('?search=product_name:' + filter)
       },
       filterBuyerName: function (filter) {
-        this.getPurchase('?search=buyer_name:' + filter)
+        this.getSale('?search=buyer_name:' + filter)
       },
       filterCoupon: function (filter) {
-        this.getPurchase('?search=discount_coupon:' + filter)
+        this.getSale('?search=discount_coupon:' + filter)
       }
     },
     mounted() {
