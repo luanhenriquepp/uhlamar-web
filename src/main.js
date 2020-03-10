@@ -22,6 +22,9 @@ import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import axios from 'axios'
+import VCurrencyField from 'v-currency-field'
+import VTextField from "vuetify/lib/components/VTextField/VTextField";
+
 
 Vue.prototype.$http = axios
 // Sets the default url used by all of this axios instance's requests
@@ -40,6 +43,17 @@ Vue.use(Vuetify, {
   iconfont: 'mdi',
   theme
 })
+
+Vue.use(VCurrencyField, {
+  locale: 'pt-BR',
+  decimalLength: 2,
+  autoDecimalMode: true,
+  min: null,
+  max: null,
+  defaultValue: 0
+})
+
+Vue.component('v-text-field', VTextField)
 
 Vue.config.productionTip = false
 

@@ -17,12 +17,35 @@
             title="Vendas"
           >
             <v-spacer/>
-            <v-text-field
-              v-model="search"
-              append-icon="search"
-              label="Busca"
-              single-line
-              hide-details/>
+            <v-layout>
+              <v-flex xs4>
+                <v-text-field
+                  v-model="filterProductName"
+                  append-icon="search"
+                  label="Nome do Produto"
+                  multi-line
+                  hide-details/>
+              </v-flex>
+
+              <v-flex xs4>
+                <v-text-field
+                  v-model="filterBuyerName"
+                  append-icon="search"
+                  label="Nome do Comprador"
+                  multi-line
+                  hide-details/>
+
+              </v-flex>
+              <v-flex xs4>
+                <v-text-field
+                  v-model="filterCoupon"
+                  append-icon="search"
+                  label="Cupon"
+                  multi-line
+                  hide-details/>
+              </v-flex>
+            </v-layout>
+
             <v-dialog
               v-model="dialog"
               max-width="500px">
@@ -91,9 +114,14 @@
                         xs12
                         sm6
                         md4>
-                        <v-text-field
+                        <v-select
+                          :items="sizes"
+                          label="Tamanho"
                           v-model="editedItem.size"
-                          label="Tamanho"/>
+                          item-text="description"
+                          item-value="key">
+                        </v-select>
+
                       </v-flex>
                       <v-flex
                         xs12
@@ -158,8 +186,8 @@
               v-if="pagination.total > pagination.per_page"
               :headers="headers"
               :items="data"
-              :search="search"
               :loading="loading"
+              :search="search"
               :items-per-page="pagination.per_page"
               :server-items-length="pagination.total"
               class="elevation-1"
@@ -177,234 +205,42 @@
                 />
               </template>
               <template v-slot:items="props">
-                <td>{{ props.item.sale_id }}</td>
                 <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.product_name"
-                    large
-                    lazy
-                    persistent
-                    @save="saveInline"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ props.item.product_name }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.product_name"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
+                  {{ props.item.product_name }}
+                </td>
+                <td>
+                  {{ props.item.buyer_name }}
+                </td>
+                <td>
+                  R$ {{ props.item.price }}
+                </td>
+                <td>
+                  {{ props.item.quantity }}
+                </td>
+                <td>
+                  R$ {{ props.item.total_sale }}
+                </td>
+                <td>
+                  {{ props.item.discount_coupon }}
                 </td>
 
                 <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.buyer_name"
-                    large
-                    lazy
-                    persistent
-                    @save="saveInline"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ props.item.buyer_name }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.buyer_name"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
+                  {{ props.item.color }}
                 </td>
                 <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.price"
-                    large
-                    lazy
-                    persistent
-                    @save="save"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ props.item.price }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.price"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
-                </td>
-
-                <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.discount_coupon"
-                    large
-                    lazy
-                    persistent
-                    @save="save"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ props.item.discount_coupon }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.discount_coupon"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
+                  {{ checkSize(props.item.size) }}
                 </td>
                 <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.quantity"
-                    large
-                    lazy
-                    persistent
-                    @save="save"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ props.item.quantity }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.quantity"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
-                </td>
-
-                <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.color"
-                    large
-                    lazy
-                    persistent
-                    @save="save"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ props.item.color }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.color"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
-                </td>
-                <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.size"
-                    large
-                    lazy
-                    persistent
-                    @save="save"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ verificaTamanho(props.item.size) }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.size"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
-                </td>
-                <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.total_sale"
-                    large
-                    lazy
-                    persistent
-                    @save="save"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ props.item.total_sale }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.total_sale"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
-                </td>
-                <td>
-                  <v-edit-dialog
-                    :return-value.sync="props.item.dt_sale"
-                    large
-                    lazy
-                    persistent
-                    @save="save"
-                    @cancel="cancelInline"
-                    @open="openInline"
-                    @close="closeInline"
-                  >
-                    <div>{{ props.item.dt_sale | friendlyDate }}</div>
-                    <template v-slot:input>
-                      <v-text-field
-                        v-model="props.item.dt_sale"
-                        :rules="[max25chars]"
-                        label="Edit"
-                        single-line
-                        counter
-                        autofocus
-                      />
-                    </template>
-                  </v-edit-dialog>
+                  {{ props.item.dt_sale | friendlyDate }}
                 </td>
                 <td class="justify-center ">
                   <v-icon
-                    medium
-                    class="mr-2"
+                    small
+                    class="mr-1"
                     @click="editItem(props.item)">edit
                   </v-icon>
                   <v-icon
-                    medium
+                    small
                     @click="deleteItem(props.item)">delete
                   </v-icon>
                 </td>
@@ -444,13 +280,23 @@
       }
     },
     data: () => ({
+      loading: true,
       snack: false,
       snackColor: '',
       moment: moment,
       menu: false,
       modal: false,
+      filterProductName: '',
+      filterBuyerName: '',
+      filterCoupon: '',
       snackText: '',
       currentPage: 1,
+      sizes: [
+        {key: 'P', description: 'Pequeno'},
+        {key: 'M', description: 'Médio'},
+        {key: 'G', description: 'Grande'},
+        {key: 'U', description: 'Único'},
+      ],
       max25chars: v => v.length <= 25 || 'Input too long!',
       pagination: {},
       data: '',
@@ -460,15 +306,14 @@
       dialog: false,
       search: '',
       headers: [
-        {text: 'ID', align: 'left', value: 'sale_id'},
         {text: 'Produto', value: 'product_name'},
         {text: 'Comprador', value: 'buyer_name'},
         {text: 'Preço', value: 'price'},
+        {text: 'Qnt', value: 'quantity'},
+        {text: 'Total', value: 'total_sale'},
         {text: 'Cupon', value: 'discount_coupon'},
-        {text: 'Quantidade', value: 'quantity'},
         {text: 'Cor', value: 'color'},
         {text: 'Tamanho', value: 'size'},
-        {text: 'Total', value: 'total_sale'},
         {text: 'Data', value: 'dt_sale'},
         {text: 'Ações', value: 'actions', sortable: false}
 
@@ -504,16 +349,25 @@
     watch: {
       currentPage: function (val) {
         this.getSale('?page=' + val)
+      },
+      filterProductName: function (filter) {
+        this.getPurchase('?search=product_name:' + filter)
+      },
+      filterBuyerName: function (filter) {
+        this.getPurchase('?search=buyer_name:' + filter)
+      },
+      filterCoupon: function (filter) {
+        this.getPurchase('?search=discount_coupon:' + filter)
       }
     },
     mounted() {
       return this.getSale();
     },
-    
+
     methods: {
-      
-      getSale(filtro = '') {
-        this.$http.get('/sale' + filtro)
+
+      getSale(filter = '') {
+        this.$http.get('/sale' + filter)
           .then(response => {
             this.pagination = response.data.data;
             this.data = response.data.data.data;
@@ -529,7 +383,7 @@
         this.dialog = dbox
       },
 
-      verificaTamanho(value) {
+      checkSize(value) {
         switch (value) {
           case 'P':
             return 'Pequeno';
@@ -592,7 +446,10 @@
           let endpoint = `sale/`;
           let method = 'post';
           this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
-            .then((response) => console.log(response.data.data))
+            .then((response) => {
+              this.saveInline(response.data);
+              this.getSale()
+            })
             .catch(error => {
               this.getSale();
               console.log(error);
@@ -601,7 +458,6 @@
         }
         this.close()
       },
-      // toasts/snackbar messages for actions
       saveInline(data) {
         this.snack = true;
         this.snackColor = 'success';
@@ -634,7 +490,39 @@
     color: red !important;
   }
 
+  table.v-table tbody td:not(:first-child) {
+    padding: 0 25px !important;
+
+  }
+
+  table.v-table tbody td:first-child {
+    padding: 0 0px !important;
+  }
+
+  table.v-table thead tr th span {
+    font-size: 15px !important;
+  }
+
   tbody tr:nth-of-type(odd) {
     background-color: rgba(0, 0, 0, .05);
+  }
+
+  table.v-table thead th:not(:first-child) {
+    padding: 0 2px !important;
+  }
+
+  table.v-table thead th:not(:first-child) {
+    padding: 0 10px !important;
+  }
+
+  table.v-table tbody td:first-child,
+  table.v-table tbody td:not(:first-child),
+  table.v-table tbody th:first-child,
+  table.v-table tbody th:not(:first-child),
+  table.v-table thead td:first-child,
+  table.v-table thead td:not(:first-child),
+  table.v-table thead th:first-child,
+  table.v-table thead th:not(:first-child) {
+    padding: 0 10px !important;
   }
 </style>
