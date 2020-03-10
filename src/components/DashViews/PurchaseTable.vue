@@ -3,7 +3,9 @@
     fill-height
     fluid
     grid-list-xl>
-    <v-layout justify-center wrap>
+    <v-layout
+      justify-center
+      wrap>
       <v-flex md12>
         <div>
           <material-card
@@ -13,7 +15,7 @@
             <v-layout>
               <v-flex xs4>
                 <v-text-field
-                  v-model="filterProductName"
+                  v-model="filter.product_name"
                   append-icon="search"
                   label="Nome do Produto"
                   multi-line
@@ -22,7 +24,7 @@
 
               <v-flex xs4>
                 <v-text-field
-                  v-model="filterProviderName"
+                  v-model="filter.provider_name"
                   append-icon="search"
                   label="Nome do Fornecedor"
                   multi-line
@@ -87,8 +89,7 @@
                           v-model="editedItem.size"
                           label="Tamanho"
                           item-text="description"
-                          item-value="key">
-                        </v-select>
+                          item-value="key"/>
 
                       </v-flex>
                       <v-flex
@@ -96,8 +97,8 @@
                         sm6
                         md4>
                         <v-text-field
-                          prefix="R$"
                           v-model="editedItem.price"
+                          prefix="R$"
                           label="Preço"/>
                       </v-flex>
                       <v-flex
@@ -159,7 +160,6 @@
               </v-card>
             </v-dialog>
 
-
             <v-data-table
               :headers="headers"
               :items="data"
@@ -169,7 +169,9 @@
               class="elevation-2"
               hide-actions
             >
-              <template slot="headerCell" slot-scope="{ header }">
+              <template
+                slot="headerCell"
+                slot-scope="{ header }">
                 <span
                   class="font-weight-light text-general text--darken-2"
                   v-text="header.text"
@@ -218,15 +220,17 @@
                 :timeout="3000"
                 :color="snackColor">
                 {{ snackText }}
-                <v-btn flat @click="snack = false">Close</v-btn>
+                <v-btn
+                  flat
+                  @click="snack = false">Close</v-btn>
               </v-snackbar>
             </v-data-table>
             <div class="text-xs-center">
               <v-pagination
                 v-if="pagination.total > pagination.per_page"
-                color="general"
                 v-model="currentPage"
-                :length="pagination.last_page"/>
+                :length="pagination.last_page"
+                color="general"/>
             </div>
           </material-card>
         </div>
@@ -238,6 +242,7 @@
 
 <script>
   import moment from 'moment'
+  import _ from 'lodash'
 
   export default {
     filters: {
@@ -249,11 +254,12 @@
       loading: true,
       pagination: {},
       sizes: [
-        {key: 'P', description: 'Pequeno'},
-        {key: 'M', description: 'Médio'},
-        {key: 'G', description: 'Grande'},
-        {key: 'U', description: 'Único'},
+        { key: 'P', description: 'Pequeno' },
+        { key: 'M', description: 'Médio' },
+        { key: 'G', description: 'Grande' },
+        { key: 'U', description: 'Único' }
       ],
+      filter: {},
       snack: false,
       currentPage: 1,
       snackColor: '',
@@ -263,178 +269,168 @@
       snackText: '',
       max25chars: v => v.length <= 25 || 'Input too long!',
       data: [],
-      rowsAmount: [10, 15, 20, {'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1}],
       dialog: false,
       search: '',
       headers: [
-        {text: 'Produto', value: 'product_name'},
-        {text: 'Fornecedor', value: 'provider_name'},
-        {text: 'Preço', value: 'price'},
-        {text: 'Quantidade', value: 'quantity'},
-        {text: 'Total', value: 'total_purchase'},
-        {text: 'Cor', value: 'color'},
-        {text: 'Tamanho', value: 'size'},
-        {text: 'Data', value: 'dt_purchase'},
-        {text: 'Ações', value: 'actions', sortable: false}
+        { text: 'Produto', value: 'product_name' },
+        { text: 'Fornecedor', value: 'provider_name' },
+        { text: 'Preço', value: 'price' },
+        { text: 'Quantidade', value: 'quantity' },
+        { text: 'Total', value: 'total_purchase' },
+        { text: 'Cor', value: 'color' },
+        { text: 'Tamanho', value: 'size' },
+        { text: 'Data', value: 'dt_purchase' },
+        { text: 'Ações', value: 'actions', sortable: false }
 
       ],
       filterProductName: '',
       filterProviderName: '',
       editedIndex: -1,
-      editedItem: {
-        purchase_id: '',
-        product_name: '',
-        provider_name: '',
-        price: '',
-        quantity: '',
-        user_id: '',
-        size: '',
-        color: '',
-        observation: '',
-        total_purchase: '',
-        dt_purchase: ''
-      },
+      editedItem: {}
     }),
 
     computed: {
-      formTitle() {
+      formTitle () {
         return this.editedIndex === -1 ? 'Nova Compra' : 'Editar Compra'
       }
     },
 
     watch: {
+      filter: {
+        handler: _.debounce(function (val) {
+          if (val) {
+            const queryString = Object.keys(val).map(key => key + ':' + val[key]).join(';')
+            return this.getPurchase('?search=' + queryString)
+          }
+        }, 500),
+        deep: true
+      },
       currentPage: function (val) {
         this.getPurchase('?page=' + val)
       },
-      filterProductName: function (filter) {
-        this.getPurchase('?search=product_name:' + filter)
-      },
-      filterProviderName: function (filter) {
-        this.getPurchase('?search=provider_name:' + filter)
-      }
     },
-    mounted() {
-      return this.getPurchase();
+    mounted () {
+      return this.getPurchase()
     },
 
     methods: {
-      getPurchase(filter = '') {
+      getPurchase (filter = '') {
         this.$http.get('/purchase' + filter)
           .then(response => {
-            this.pagination = response.data.data;
-            this.data = response.data.data.data;
+            this.pagination = response.data.data
+            this.data = response.data.data.data
           })
           .catch(error => console.log(error))
       },
 
-      editItem(item, dbox = true) {
-        this.editedIndex = this.data.indexOf(item);
-        item.isAdmin = this.checkboxAdmin;
-        item.isActive = this.checkboxActive;
-        this.editedItem = Object.assign({}, item);
+      editItem (item, dbox = true) {
+        this.editedIndex = this.data.indexOf(item)
+        item.isAdmin = this.checkboxAdmin
+        item.isActive = this.checkboxActive
+        this.editedItem = Object.assign({}, item)
         this.dialog = dbox
       },
 
-      checkSize(value) {
+      checkSize (value) {
         switch (value) {
           case 'P':
-            return 'Pequeno';
+            return 'Pequeno'
           case 'M':
-            return 'Médio';
+            return 'Médio'
           case 'G':
-            return 'Grande';
+            return 'Grande'
           default:
             return 'Único'
         }
       },
 
-      callTableAction(item, endpoint, method) {
-        let tableItem = this.editedItem;
-        this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+      callTableAction (item, endpoint, method) {
+        let tableItem = this.editedItem
+        this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
           .then((response) => this.saveInline(response.data))
           .catch(error => {
-            console.log(error);
+            console.log(error)
             return this.cancelInline
           })
       },
 
-      deleteItem(item) {
-        const index = this.data.indexOf(item);
-        confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1);
-        this.editedItem = Object.assign({}, item);
-        let endpoint = `purchase/${this.editedItem.purchase_id}`;
-        let method = 'DELETE';
-        this.callTableAction(item, endpoint, method);
+      deleteItem (item) {
+        const index = this.data.indexOf(item)
+        confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1)
+        this.editedItem = Object.assign({}, item)
+        let endpoint = `purchase/${this.editedItem.purchase_id}`
+        let method = 'DELETE'
+        this.callTableAction(item, endpoint, method)
         this.getPurchase()
       },
 
-      close() {
-        this.dialog = false;
+      close () {
+        this.dialog = false
         setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem);
+          this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
         }, 300)
       },
 
-      save() {
+      save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.data[this.editedIndex], this.editedItem);
-          let tableItem = this.editedItem;
-          let endpoint = `purchase/${this.editedItem.purchase_id}`;
-          let method = 'put';
-          this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+          Object.assign(this.data[this.editedIndex], this.editedItem)
+          let tableItem = this.editedItem
+          let endpoint = `purchase/${this.editedItem.purchase_id}`
+          let method = 'put'
+          this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              console.log(response);
-              this.saveInline(response.data);
+              console.log(response)
+              this.saveInline(response.data)
               this.getPurchase()
             })
             .catch(error => {
-              console.log(error);
+              console.log(error)
               return this.cancelInline
             })
         } else {
-          let tableItem = this.editedItem;
-          this.data.push(this.editedItem);
-          let endpoint = `purchase`;
-          let method = 'POST';
-          this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+          let tableItem = this.editedItem
+          this.data.push(this.editedItem)
+          let endpoint = `purchase`
+          let method = 'POST'
+          this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              this.saveInline(response.data);
+              this.saveInline(response.data)
               this.getPurchase()
             })
             .catch(error => {
-              console.log(error);
+              console.log(error)
               return this.cancelInline
             })
         }
         this.close()
       },
 
-      saveInline(data) {
-        this.snack = true;
-        this.snackColor = 'success';
+      saveInline (data) {
+        this.snack = true
+        this.snackColor = 'success'
         this.snackText = data.message
       },
 
-      cancelInline() {
-        this.snack = true;
-        this.snackColor = 'error';
+      cancelInline () {
+        this.snack = true
+        this.snackColor = 'error'
         this.snackText = 'Canceled'
       },
 
-      reset() {
-        this.snack = true;
-        this.snackColor = 'success';
+      reset () {
+        this.snack = true
+        this.snackColor = 'success'
         this.snackText = 'Data reset to default'
       },
 
-      openInline() {
-        this.snack = true;
-        this.snackColor = 'info';
+      openInline () {
+        this.snack = true
+        this.snackColor = 'info'
         this.snackText = 'Dialog opened'
       },
 
-      closeInline() {
+      closeInline () {
         console.log('Dialog closed')
       }
     }

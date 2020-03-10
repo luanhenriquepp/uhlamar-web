@@ -116,11 +116,10 @@
                         md4>
                         <v-select
                           :items="sizes"
-                          label="Tamanho"
                           v-model="editedItem.size"
+                          label="Tamanho"
                           item-text="description"
-                          item-value="key">
-                        </v-select>
+                          item-value="key"/>
 
                       </v-flex>
                       <v-flex
@@ -209,24 +208,24 @@
                   </div>
                 </td>
                 <td>
-                 <div>
-                   {{ props.item.buyer_name }}
-                 </div>
+                  <div>
+                    {{ props.item.buyer_name }}
+                  </div>
                 </td>
                 <td>
-                 <div>
-                   R$ {{ props.item.price }}
-                 </div>
+                  <div>
+                    R$ {{ props.item.price }}
+                  </div>
                 </td>
                 <td>
-                 <div>
-                   {{ props.item.quantity }}
-                 </div>
+                  <div>
+                    {{ props.item.quantity }}
+                  </div>
                 </td>
                 <td>
-                 <div>
-                   R$ {{ props.item.total_sale }}
-                 </div>
+                  <div>
+                    R$ {{ props.item.total_sale }}
+                  </div>
                 </td>
                 <td>
                   <div>
@@ -274,9 +273,9 @@
             <div class="text-xs-center">
               <v-pagination
                 v-if="pagination.total > pagination.per_page"
-                color="general"
                 v-model="currentPage"
-                :length="pagination.last_page"/>
+                :length="pagination.last_page"
+                color="general"/>
             </div>
           </material-card>
         </div>
@@ -288,6 +287,7 @@
 
 <script>
   import moment from 'moment'
+  import _ from 'lodash'
 
   export default {
     filters: {
@@ -302,205 +302,174 @@
       moment: moment,
       menu: false,
       modal: false,
-      filterProductName: '',
-      filterBuyerName: '',
-      filterCoupon: '',
-      filter:{},
+      filter: {},
       snackText: '',
       currentPage: 1,
       sizes: [
-        {key: 'P', description: 'Pequeno'},
-        {key: 'M', description: 'Médio'},
-        {key: 'G', description: 'Grande'},
-        {key: 'U', description: 'Único'},
+        { key: 'P', description: 'Pequeno' },
+        { key: 'M', description: 'Médio' },
+        { key: 'G', description: 'Grande' },
+        { key: 'U', description: 'Único' }
       ],
       max25chars: v => v.length <= 25 || 'Input too long!',
       pagination: {},
-      data: '',
-      checkboxAdmin: true,
-      checkboxActive: true,
-      rowsAmount: [10, 15, 20, {'text': '$vuetify.dataIterator.rowsPerPageAll', 'value': -1}],
+      data: [],
       dialog: false,
       search: '',
       headers: [
-        {text: 'Produto', value: 'product_name'},
-        {text: 'Comprador', value: 'buyer_name'},
-        {text: 'Preço', value: 'price'},
-        {text: 'Qnt', value: 'quantity'},
-        {text: 'Total', value: 'total_sale'},
-        {text: 'Cupon', value: 'discount_coupon'},
-        {text: 'Cor', value: 'color'},
-        {text: 'Tamanho', value: 'size'},
-        {text: 'Data', value: 'dt_sale'},
-        {text: 'Ações', value: 'actions', sortable: false}
+        { text: 'Produto', value: 'product_name' },
+        { text: 'Comprador', value: 'buyer_name' },
+        { text: 'Preço', value: 'price' },
+        { text: 'Qnt', value: 'quantity' },
+        { text: 'Total', value: 'total_sale' },
+        { text: 'Cupon', value: 'discount_coupon' },
+        { text: 'Cor', value: 'color' },
+        { text: 'Tamanho', value: 'size' },
+        { text: 'Data', value: 'dt_sale' },
+        { text: 'Ações', value: 'actions', sortable: false }
 
       ],
       editedIndex: -1,
-      editedItem: {
-        user_id: '',
-        buyer_name: '',
-        discount_coupon: '',
-        dt_sale: '',
-        size: '',
-        product_name: '',
-        color: '',
-        price: '',
-        quantity: '',
-        total_sale: '',
-        observation: ''
-      },
+      editedItem: {},
       defaultItem: {}
     }),
 
     computed: {
-      formTitle() {
-        return this.editedIndex === -1 ? 'Nova Venda' : 'Editar vENDA'
+      formTitle () {
+        return this.editedIndex === -1 ? 'Nova Venda' : 'Editar Venda'
       }
     },
 
     watch: {
-      filter: function (value) {
-        if (value) {
-          const queryString = Object.keys(value).map(key => key + ':' + value[key]).join(';');
-          this.getSale('?search=' + queryString)
-        }
+      filter: {
+        handler: _.debounce(function (val) {
+          if (val) {
+            const queryString = Object.keys(val).map(key => key + ':' + val[key]).join(';')
+            return this.getSale('?search=' + queryString)
+          }
+        }, 500),
+        deep: true
       },
       currentPage: function (val) {
         this.getSale('?page=' + val)
       },
-      filterProductName: function (filter) {
-        this.getSale('?search=product_name:' + filter)
-      },
-      filterBuyerName: function (filter) {
-        this.getSale('?search=buyer_name:' + filter)
-      },
-      filterCoupon: function (filter) {
-        this.getSale('?search=discount_coupon:' + filter)
-      },
-      dialog(val) {
+      dialog (val) {
         val || this.close()
-      },
-      deep: true
+      }
     },
-    mounted() {
-      return this.getSale();
+    mounted () {
+      return this.getSale()
     },
 
     methods: {
-
-      getSale(filter = '') {
+      getSale (filter = '') {
         this.$http.get('/sale' + filter)
           .then(response => {
-            this.pagination = response.data.data;
-            this.data = response.data.data.data;
+            this.pagination = response.data.data
+            this.data = response.data.data.data
           })
           .catch(error => console.log(error))
       },
-
-      editItem(item, dbox = true) {
-        this.editedIndex = this.data.indexOf(item);
-        item.isAdmin = this.checkboxAdmin;
-        item.isActive = this.checkboxActive;
-        this.editedItem = Object.assign({}, item);
+      editItem (item, dbox = true) {
+        this.editedIndex = this.data.indexOf(item)
+        item.isAdmin = this.checkboxAdmin
+        item.isActive = this.checkboxActive
+        this.editedItem = Object.assign({}, item)
         this.dialog = dbox
       },
-
-      checkSize(value) {
+      checkSize (value) {
         switch (value) {
           case 'P':
-            return 'Pequeno';
+            return 'Pequeno'
           case 'M':
-            return 'Médio';
+            return 'Médio'
           case 'G':
-            return 'Grande';
+            return 'Grande'
           default:
             return 'Único'
         }
       },
-
-      callTableAction(item, endpoint, method) {
-        let tableItem = this.editedItem;
-        this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+      callTableAction (item, endpoint, method) {
+        let tableItem = this.editedItem
+        this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
           .then((response) => this.saveInline(response.data))
           .catch(error => {
-            console.log(error);
+            console.log(error)
             return this.cancelInline
           })
       },
 
-      deleteItem(item) {
-        const index = this.data.indexOf(item);
-        confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1);
-        this.editedItem = Object.assign({}, item);
-        let endpoint = `sale/${this.editedItem.sale_id}`;
-        let method = 'DELETE';
-        this.callTableAction(item, endpoint, method);
+      deleteItem (item) {
+        const index = this.data.indexOf(item)
+        confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1)
+        this.editedItem = Object.assign({}, item)
+        let endpoint = `sale/${this.editedItem.sale_id}`
+        let method = 'DELETE'
+        this.callTableAction(item, endpoint, method)
         this.getSale()
       },
-
-      close() {
-        this.dialog = false;
+      close () {
+        this.dialog = false
         setTimeout(() => {
-          this.editedItem = Object.assign({}, this.defaultItem);
+          this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
         }, 300)
       },
-
-      save() {
+      save () {
         if (this.editedIndex > -1) {
-          Object.assign(this.data[this.editedIndex], this.editedItem);
-          let tableItem = this.editedItem;
-          let endpoint = `sale/${this.editedItem.sale_id}`;
-          let method = 'put';
-          this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+          Object.assign(this.data[this.editedIndex], this.editedItem)
+          let tableItem = this.editedItem
+          let endpoint = `sale/${this.editedItem.sale_id}`
+          let method = 'put'
+          this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              console.log(response);
-              this.saveInline(response.data);
+              console.log(response)
+              this.saveInline(response.data)
               this.getSale()
             })
             .catch(error => {
-              console.log(error);
+              console.log(error)
               return this.cancelInline
             })
         } else {
-          let tableItem = this.editedItem;
-          this.data.push(this.editedItem);
-          let endpoint = `sale`;
-          let method = 'post';
-          this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
+          let tableItem = this.editedItem
+          this.data.push(this.editedItem)
+          let endpoint = `sale`
+          let method = 'post'
+          this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              this.saveInline(response.data);
+              this.saveInline(response.data)
               this.getSale()
             })
             .catch(error => {
-              this.getSale();
-              console.log(error);
+              this.getSale()
+              console.log(error)
               return this.cancelInline
             })
         }
         this.close()
       },
-      saveInline(data) {
-        this.snack = true;
-        this.snackColor = 'success';
+      saveInline (data) {
+        this.snack = true
+        this.snackColor = 'success'
         this.snackText = data.message
       },
-      cancelInline() {
-        this.snack = true;
-        this.snackColor = 'error';
+      cancelInline () {
+        this.snack = true
+        this.snackColor = 'error'
         this.snackText = 'Canceled'
       },
-      reset() {
-        this.snack = true;
-        this.snackColor = 'success';
+      reset () {
+        this.snack = true
+        this.snackColor = 'success'
         this.snackText = 'Data reset to default'
       },
-      openInline() {
-        this.snack = true;
-        this.snackColor = 'info';
+      openInline () {
+        this.snack = true
+        this.snackColor = 'info'
         this.snackText = 'Dialog opened'
       },
-      closeInline() {
+      closeInline () {
         console.log('Dialog closed')
       }
     }

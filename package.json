@@ -1,5 +1,5 @@
 {
-  "name": "vuetify-admin-dashboard",
+  "name": "uhlamar-financas",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "chartist": "0.11.0",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "node-sass": "^4.9.3",
     "sass-loader": "^7.1.0",
