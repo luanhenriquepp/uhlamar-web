@@ -20,7 +20,7 @@
             <v-layout>
               <v-flex xs4>
                 <v-text-field
-                  v-model="filterProductName"
+                  v-model="filter.product_name"
                   append-icon="search"
                   label="Nome do Produto"
                   multi-line
@@ -29,7 +29,7 @@
 
               <v-flex xs4>
                 <v-text-field
-                  v-model="filterBuyerName"
+                  v-model="filter.buyer_name"
                   append-icon="search"
                   label="Nome do Comprador"
                   multi-line
@@ -38,7 +38,7 @@
               </v-flex>
               <v-flex xs4>
                 <v-text-field
-                  v-model="filterCoupon"
+                  v-model="filter.discount_coupon"
                   append-icon="search"
                   label="Cupon"
                   multi-line
@@ -305,6 +305,7 @@
       filterProductName: '',
       filterBuyerName: '',
       filterCoupon: '',
+      filter:{},
       snackText: '',
       currentPage: 1,
       sizes: [
@@ -358,11 +359,12 @@
     },
 
     watch: {
-      dialog(val) {
-        val || this.close()
-      }
-    },
-    watch: {
+      filter: function (value) {
+        if (value) {
+          const queryString = Object.keys(value).map(key => key + ':' + value[key]).join(';');
+          this.getSale('?search=' + queryString)
+        }
+      },
       currentPage: function (val) {
         this.getSale('?page=' + val)
       },
@@ -374,7 +376,11 @@
       },
       filterCoupon: function (filter) {
         this.getSale('?search=discount_coupon:' + filter)
-      }
+      },
+      dialog(val) {
+        val || this.close()
+      },
+      deep: true
     },
     mounted() {
       return this.getSale();
