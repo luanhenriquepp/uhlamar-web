@@ -459,7 +459,7 @@
         } else {
           let tableItem = this.editedItem;
           this.data.push(this.editedItem);
-          let endpoint = `sale/`;
+          let endpoint = `sale`;
           let method = 'post';
           this.$store.dispatch('updateTableItem', {endpoint, tableItem, method})
             .then((response) => {
