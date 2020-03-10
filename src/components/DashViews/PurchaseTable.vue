@@ -176,6 +176,7 @@
                 />
               </template>
               <template v-slot:items="props">
+
                 <td>
                   <div>{{ props.item.product_name }}</div>
                 </td>

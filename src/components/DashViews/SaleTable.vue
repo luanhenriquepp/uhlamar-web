@@ -207,7 +207,6 @@
                   <div>
                     {{ props.item.product_name }}
                   </div>
-
                 </td>
                 <td>
                  <div>
