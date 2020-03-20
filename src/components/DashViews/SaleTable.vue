@@ -330,7 +330,19 @@
 
       ],
       editedIndex: -1,
-      editedItem: {},
+      editedItem: {
+        user_id: '',
+        buyer_name: '',
+        discount_coupon: '',
+        dt_sale: '',
+        size: '',
+        product_name: '',
+        color: '',
+        price: '',
+        quantity: '',
+        total_sale: '',
+        observation: ''
+      },
       defaultItem: {}
     }),
 

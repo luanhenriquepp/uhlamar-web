@@ -286,7 +286,19 @@
       filterProductName: '',
       filterProviderName: '',
       editedIndex: -1,
-      editedItem: {}
+      editedItem: {
+        purchase_id: '',
+        product_name: '',
+        provider_name: '',
+        price: '',
+        quantity: '',
+        user_id: '',
+        size: '',
+        color: '',
+        observation: '',
+        total_purchase: '',
+        dt_purchase: ''
+      }
     }),
 
     computed: {
