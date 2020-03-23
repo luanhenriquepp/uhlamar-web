@@ -96,13 +96,29 @@
         md6
         lg3
       >
+
         <material-stats-card
+          :value="totalPurchase"
+          color="red"
+          icon="mdi-cart"
+          title="Total Gasto"
+          sub-text="Total de compras realizadas..."
+
+        />
+      </v-flex>
+      <v-flex
+        sm6
+        xs12
+        md6
+        lg3
+      >
+        <material-stats-card
+          :value="totalSale"
           color="green"
-          icon="mdi-store"
-          title="Revenue"
-          value="$34,245"
-          sub-icon="mdi-calendar"
-          sub-text="Last 24 Hours"
+          icon="mdi-shopping"
+          title="Total Vendido"
+          sub-text="Total de vendas realizadas..."
+
         />
       </v-flex>
       <v-flex
@@ -121,21 +137,6 @@
           sub-icon-color="error"
           sub-text="Get More Space..."
           sub-text-color="text-primary"
-        />
-      </v-flex>
-      <v-flex
-        sm6
-        xs12
-        md6
-        lg3
-      >
-        <material-stats-card
-          color="red"
-          icon="mdi-information-outline"
-          title="Fixed Issues"
-          value="75"
-          sub-icon="mdi-tag"
-          sub-text="Tracked from Github"
         />
       </v-flex>
       <v-flex
@@ -364,6 +365,8 @@ export default {
   name: 'Dashboard',
   data () {
     return {
+      totalPurchase: '',
+      totalSale: '',
       dailySalesChart: {
         data: {
           labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
@@ -505,9 +508,34 @@ export default {
       }
     }
   },
+  computed: {
+
+  },
+  mounted () {
+     this.getTotalPurchase()
+     this.getTotalSale()
+  },
   methods: {
     complete (index) {
       this.list[index] = !this.list[index]
+    },
+    getTotalPurchase () {
+      this.$http.get('/purchase-total')
+        .then(response => {
+          const result = response.data.data.toFixed(2).split('.')
+          result[0] = 'R$ ' + result[0].split(/(?=(?:...)*$)/).join('.')
+           this.totalPurchase = result.join(',')
+        })
+        .catch(error => console.log(error))
+    },
+    getTotalSale () {
+      this.$http.get('/sale-total')
+        .then(response => {
+          const result = response.data.data.toFixed(2).split('.')
+          result[0] = 'R$ ' + result[0].split(/(?=(?:...)*$)/).join('.')
+          this.totalSale = result.join(',')
+        })
+        .catch(error => console.log(error))
     }
   }
 }

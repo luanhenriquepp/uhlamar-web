@@ -292,7 +292,7 @@
         provider_name: '',
         price: '',
         quantity: '',
-        user_id: '',
+        user_id: JSON.parse(localStorage.getItem('token')),
         size: '',
         color: '',
         observation: '',
@@ -322,6 +322,8 @@
       },
     },
     mounted () {
+      const user = localStorage.getItem('token')
+      console.log(JSON.parse(user))
       return this.getPurchase()
     },
 
