@@ -522,7 +522,7 @@ export default {
     getTotalPurchase () {
       this.$http.get('/purchase-total')
         .then(response => {
-          const result = response.data.data.toFixed(2).split('.')
+          var result = parseFloat(response.data.data).toFixed(2).split('.')
           result[0] = 'R$ ' + result[0].split(/(?=(?:...)*$)/).join('.')
            this.totalPurchase = result.join(',')
         })
@@ -531,7 +531,7 @@ export default {
     getTotalSale () {
       this.$http.get('/sale-total')
         .then(response => {
-          const result = response.data.data.toFixed(2).split('.')
+          var result = parseFloat(response.data.data).toFixed(2).split('.')
           result[0] = 'R$ ' + result[0].split(/(?=(?:...)*$)/).join('.')
           this.totalSale = result.join(',')
         })
