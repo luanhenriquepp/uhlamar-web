@@ -243,6 +243,7 @@
 <script>
   import moment from 'moment'
   import _ from 'lodash'
+  import Vue from 'vue'
 
   export default {
     filters: {
@@ -288,6 +289,7 @@
       editedIndex: -1,
       editedItem: {
         purchase_id: '',
+        user_id: '',
         product_name: '',
         provider_name: '',
         price: '',
@@ -320,7 +322,7 @@
         this.getPurchase('?page=' + val)
       }
     },
-    mounted () {
+    created () {
       return this.getPurchase()
     },
 
@@ -400,6 +402,9 @@
               return this.cancelInline
             })
         } else {
+          const user = localStorage.getItem('user')
+          this.editedItem.user_id = user
+          this.editedItem.total_purchase = this.editedItem.quantity * this.editedItem.price
           let tableItem = this.editedItem
           this.data.push(this.editedItem)
           let endpoint = `purchase`

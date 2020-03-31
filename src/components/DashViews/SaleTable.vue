@@ -342,7 +342,8 @@
         price: '',
         quantity: '',
         total_sale: '',
-        observation: ''
+        observation: '',
+        sale_id: ''
       },
       defaultItem: {}
     }),
@@ -445,6 +446,9 @@
               return this.cancelInline
             })
         } else {
+          const user = localStorage.getItem('user')
+          this.editedItem.user_id = user
+          this.editedItem.total_purchase = this.editedItem.quantity * this.editedItem.price
           let tableItem = this.editedItem
           this.data.push(this.editedItem)
           let endpoint = `sale`
