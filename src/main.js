@@ -23,8 +23,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import axios from 'axios'
 import VCurrencyField from 'v-currency-field'
-import VTextField from 'vuetify/lib/components/VTextField/VTextField';
-
+import VTextField from 'vuetify/lib/components/VTextField/VTextField'
 
 Vue.prototype.$http = axios
 // Sets the default url used by all of this axios instance's requests

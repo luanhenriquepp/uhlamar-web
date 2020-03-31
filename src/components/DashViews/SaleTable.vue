@@ -100,6 +100,7 @@
                         md4>
                         <v-text-field
                           v-model="editedItem.price"
+                          prefix="R$"
                           label="Preço"/>
                       </v-flex>
                       <v-flex
@@ -317,15 +318,15 @@
       dialog: false,
       search: '',
       headers: [
-        { text: 'Produto', value: 'product_name' },
-        { text: 'Comprador', value: 'buyer_name' },
-        { text: 'Preço', value: 'price' },
-        { text: 'Qnt', value: 'quantity' },
-        { text: 'Total', value: 'total_sale' },
-        { text: 'Cupon', value: 'discount_coupon' },
-        { text: 'Cor', value: 'color' },
-        { text: 'Tamanho', value: 'size' },
-        { text: 'Data', value: 'dt_sale' },
+        { text: 'Produto', value: 'product_name', sortable: false },
+        { text: 'Comprador', value: 'buyer_name', sortable: false },
+        { text: 'Preço', value: 'price', sortable: false },
+        { text: 'Qnt', value: 'quantity', sortable: false },
+        { text: 'Total', value: 'total_sale', sortable: false },
+        { text: 'Cupon', value: 'discount_coupon', sortable: false },
+        { text: 'Cor', value: 'color', sortable: false },
+        { text: 'Tamanho', value: 'size', sortable: false },
+        { text: 'Data', value: 'dt_sale', sortable: false },
         { text: 'Ações', value: 'actions', sortable: false }
 
       ],
@@ -450,6 +451,7 @@
           let method = 'post'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
+              console.log(response.data)
               this.saveInline(response.data)
               this.getSale()
             })

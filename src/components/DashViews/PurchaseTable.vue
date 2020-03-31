@@ -272,14 +272,14 @@
       dialog: false,
       search: '',
       headers: [
-        { text: 'Produto', value: 'product_name' },
-        { text: 'Fornecedor', value: 'provider_name' },
-        { text: 'Preço', value: 'price' },
-        { text: 'Quantidade', value: 'quantity' },
-        { text: 'Total', value: 'total_purchase' },
-        { text: 'Cor', value: 'color' },
-        { text: 'Tamanho', value: 'size' },
-        { text: 'Data', value: 'dt_purchase' },
+        { text: 'Produto', value: 'product_name', sortable: false },
+        { text: 'Fornecedor', value: 'provider_name', sortable: false },
+        { text: 'Preço', value: 'price', sortable: false },
+        { text: 'Quantidade', value: 'quantity', sortable: false },
+        { text: 'Total', value: 'total_purchase', sortable: false },
+        { text: 'Cor', value: 'color', sortable: false },
+        { text: 'Tamanho', value: 'size', sortable: false },
+        { text: 'Data', value: 'dt_purchase', sortable: false },
         { text: 'Ações', value: 'actions', sortable: false }
 
       ],
@@ -292,7 +292,6 @@
         provider_name: '',
         price: '',
         quantity: '',
-        user_id: JSON.parse(localStorage.getItem('token')),
         size: '',
         color: '',
         observation: '',
@@ -319,11 +318,9 @@
       },
       currentPage: function (val) {
         this.getPurchase('?page=' + val)
-      },
+      }
     },
     mounted () {
-      const user = localStorage.getItem('token')
-      console.log(JSON.parse(user))
       return this.getPurchase()
     },
 
