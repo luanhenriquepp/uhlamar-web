@@ -64,7 +64,7 @@
 				"Another Notification",
 				"Another One - Dj Khalid voice"
 			],
-			title: "I got a digital dash -Future Hendrixx",
+			title: "U H L A M A R",
 			responsive: false,
 			responsiveInput: false
 		}),
