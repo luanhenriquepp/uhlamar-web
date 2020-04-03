@@ -448,7 +448,7 @@
         } else {
           const user = localStorage.getItem('user')
           this.editedItem.user_id = user
-          this.editedItem.total_purchase = this.editedItem.quantity * this.editedItem.price
+          this.editedItem.total_sale = this.editedItem.quantity * this.editedItem.price
           let tableItem = this.editedItem
           this.data.push(this.editedItem)
           let endpoint = `sale`
