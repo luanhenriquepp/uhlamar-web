@@ -105,6 +105,17 @@
                         xs12
                         sm6
                         md6>
+                        <v-select
+                          :items="investments_type"
+                          v-model="editedItem.investment_type"
+                          label="Tipo de Investimento"
+                          item-text="description"
+                          item-value="key"/>
+                      </v-flex>
+                      <v-flex
+                        xs12
+                        sm6
+                        md6>
                         <v-menu
                           ref="menu"
                           v-model="menu"
@@ -260,6 +271,10 @@
         { key: 'G', description: 'Grande' },
         { key: 'U', description: 'Único' }
       ],
+      investments_type: [
+        { key: 'internal', description: 'Investimento Interno' },
+        { key: 'external', description: 'Investimento Externo' }
+      ],
       filter: {},
       snack: false,
       currentPage: 1,
@@ -294,6 +309,7 @@
         provider_name: '',
         price: '',
         quantity: '',
+        investment_type: '',
         size: '',
         color: '',
         observation: '',
