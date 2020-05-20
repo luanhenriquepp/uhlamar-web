@@ -85,6 +85,14 @@ export default [
         component: () => import(`@/components/DashViews/SaleTable.vue`)
       },
       {
+        path: 'stock-table',
+        meta: {
+          name: 'Estoque',
+          requiresAuth: true
+        },
+        component: () => import(`@/components/DashViews/StockTable.vue`)
+      },
+      {
         path: 'tablestest',
         meta: {
           name: 'Complex Tables test',

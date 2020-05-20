@@ -98,6 +98,11 @@ export default {
         icon: 'mdi-table-edit',
         text: 'Vendas'
       },
+      {
+        to: '/dashboard/stock-table',
+        icon: 'mdi-table-edit',
+        text: 'Estoque'
+      }
       // {
       //   to: '/dashboard/typography',
       //   icon: 'mdi-format-font',

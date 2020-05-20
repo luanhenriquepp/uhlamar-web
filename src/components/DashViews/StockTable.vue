@@ -2,20 +2,15 @@
   <v-container
     fill-height
     fluid
-    grid-list-xl
-  >
+    grid-list-xl>
     <v-layout
       justify-center
-      wrap
-    >
-      <v-flex
-        md12
-      >
+      wrap>
+      <v-flex md12>
         <div>
           <material-card
             color="general"
-            title="Vendas"
-          >
+            title="Estoque">
             <v-spacer/>
             <v-layout>
               <v-flex xs4>
@@ -29,23 +24,14 @@
 
               <v-flex xs4>
                 <v-text-field
-                  v-model="filter.buyer_name"
+                  v-model="filter.provider_name"
                   append-icon="search"
-                  label="Nome do Comprador"
+                  label="Nome do Fornecedor"
                   multi-line
                   hide-details/>
 
-              </v-flex>
-              <v-flex xs4>
-                <v-text-field
-                  v-model="filter.discount_coupon"
-                  append-icon="search"
-                  label="Cupon"
-                  multi-line
-                  hide-details/>
               </v-flex>
             </v-layout>
-
             <v-dialog
               v-model="dialog"
               max-width="500px">
@@ -54,7 +40,7 @@
                   color="general"
                   dark
                   class="mb-2"
-                  v-on="on">Nova Venda
+                  v-on="on">Novo Item
                 </v-btn>
               </template>
 
@@ -75,33 +61,8 @@
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.buyer_name"
-                          label="Comprador"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.discount_coupon"
-                          label="Cupon"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.quantity"
-                          label="Quantidade"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.price"
-                          prefix="R$"
-                          label="Preço"/>
+                          v-model="editedItem.provider_name"
+                          label="Fornecedor"/>
                       </v-flex>
                       <v-flex
                         xs12
@@ -110,6 +71,14 @@
                         <v-text-field
                           v-model="editedItem.color"
                           label="Cor"/>
+                      </v-flex>
+                      <v-flex
+                        xs12
+                        sm6
+                        md4>
+                        <v-text-field
+                          v-model="editedItem.quantity"
+                          label="Quantidade"/>
                       </v-flex>
                       <v-flex
                         xs12
@@ -124,57 +93,13 @@
 
                       </v-flex>
                       <v-flex
-                        xs16
-                        sm10
-                        md7>
-                        <v-select
-                          :items="itemFromStock"
-                          v-model="editedItem.stock_id"
-                          :item-text="text"
-                          label="Produto"
-                          item-value="stock_id"/>
-
-                      </v-flex>
-
-                      <v-flex
                         xs12
                         sm6
                         md4>
-                        <v-menu
-                          ref="menu"
-                          v-model="menu"
-                          :close-on-content-click="false"
-                          :return-value.sync="editedItem.dt_sale"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="290px"
-                        >
-                          <template v-slot:activator="{ on }">
-                            <v-text-field
-                              v-model="editedItem.dt_sale"
-                              label="Selecionar Data"
-                              prepend-icon="event"
-                              readonly
-                              v-on="on"
-                            />
-                          </template>
-                          <v-date-picker
-                            v-model="editedItem.dt_sale"
-                            no-title
-                            scrollable>
-                            <v-spacer/>
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="menu = false">Cancel
-                            </v-btn>
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="$refs.menu.save(editedItem.dt_sale)">OK
-                            </v-btn>
-                          </v-date-picker>
-                        </v-menu>
+                        <v-text-field
+                          v-model="editedItem.price"
+                          prefix="R$"
+                          label="Preço"/>
                       </v-flex>
                     </v-layout>
                   </v-container>
@@ -199,72 +124,43 @@
               :headers="headers"
               :items="data"
               :loading="loading"
-              :search="search"
               :items-per-page="pagination.per_page"
               :server-items-length="pagination.total"
-              class="elevation-1"
+              class="elevation-2"
               hide-actions
             >
-
               <template
                 slot="headerCell"
-                slot-scope="{ header }"
-              >
+                slot-scope="{ header }">
                 <span
-                  class="subheading font-weight-light text-general text--darken-3"
+                  class="font-weight-light text-general text--darken-2"
                   v-text="header.text"
                 />
               </template>
               <template v-slot:items="props">
+
                 <td>
-                  <div>
-                    {{ props.item.product_name }}
-                  </div>
+                  <div>{{ props.item.product_name }}</div>
                 </td>
                 <td>
-                  <div>
-                    {{ props.item.buyer_name }}
-                  </div>
+                  <div>{{ props.item.provider_name }}</div>
                 </td>
                 <td>
-                  <div>
-                    R$ {{ props.item.price }}
-                  </div>
+                  <div>R$ {{ props.item.price }}</div>
                 </td>
                 <td>
-                  <div>
-                    {{ props.item.quantity }}
-                  </div>
+                  <div>{{ props.item.quantity }}</div>
                 </td>
                 <td>
-                  <div>
-                    R$ {{ props.item.total_sale }}
-                  </div>
+                  <div>{{ props.item.color }}</div>
                 </td>
                 <td>
-                  <div>
-                    {{ props.item.discount_coupon }}
-                  </div>
+                  <div>{{ checkSize(props.item.size) }}</div>
                 </td>
-                <td>
-                  <div>
-                    {{ props.item.color }}
-                  </div>
-                </td>
-                <td>
-                  <div>
-                    {{ checkSize(props.item.size) }}
-                  </div>
-                </td>
-                <td>
-                  <div>
-                    {{ props.item.dt_sale | friendlyDate }}
-                  </div>
-                </td>
-                <td class="justify-center ">
+                <td class="text-md-justify">
                   <v-icon
                     small
-                    class="mr-1"
+                    class="mr-2"
                     @click="editItem(props.item)">edit
                   </v-icon>
                   <v-icon
@@ -280,8 +176,7 @@
                 {{ snackText }}
                 <v-btn
                   flat
-                  @click="snack = false">Close
-                </v-btn>
+                  @click="snack = false">Close</v-btn>
               </v-snackbar>
             </v-data-table>
             <div class="text-xs-center">
@@ -311,61 +206,55 @@
     },
     data: () => ({
       loading: true,
-      snack: false,
-      snackColor: '',
-      moment: moment,
-      menu: false,
-      modal: false,
-      filter: {},
-      snackText: '',
-      currentPage: 1,
+      pagination: {},
       sizes: [
         { key: 'P', description: 'Pequeno' },
         { key: 'M', description: 'Médio' },
         { key: 'G', description: 'Grande' },
         { key: 'U', description: 'Único' }
       ],
+      investments_type: [
+        { key: 'internal', description: 'Investimento Interno' },
+        { key: 'external', description: 'Investimento Externo' }
+      ],
+      filter: {},
+      snack: false,
+      currentPage: 1,
+      snackColor: '',
+      moment: moment,
+      menu: false,
+      modal: false,
+      snackText: '',
       max25chars: v => v.length <= 25 || 'Input too long!',
-      pagination: {},
       data: [],
       dialog: false,
       search: '',
       headers: [
         { text: 'Produto', value: 'product_name', sortable: false },
-        { text: 'Comprador', value: 'buyer_name', sortable: false },
+        { text: 'Fornecedor', value: 'provider_name', sortable: false },
         { text: 'Preço', value: 'price', sortable: false },
-        { text: 'Qnt', value: 'quantity', sortable: false },
-        { text: 'Total', value: 'total_sale', sortable: false },
-        { text: 'Cupon', value: 'discount_coupon', sortable: false },
+        { text: 'Quantidade', value: 'quantity', sortable: false },
         { text: 'Cor', value: 'color', sortable: false },
         { text: 'Tamanho', value: 'size', sortable: false },
-        { text: 'Data', value: 'dt_sale', sortable: false },
         { text: 'Ações', value: 'actions', sortable: false }
 
       ],
-      itemFromStock: [],
+      filterProductName: '',
+      filterProviderName: '',
       editedIndex: -1,
       editedItem: {
-        user_id: '',
-        stock_id: '',
-        buyer_name: '',
-        discount_coupon: '',
-        dt_sale: '',
-        size: '',
         product_name: '',
-        color: '',
+        provider_name: '',
         price: '',
         quantity: '',
-        total_sale: '',
-        observation: '',
-        sale_id: ''
-      },
-      defaultItem: {}
+        size: '',
+        color: ''
+      }
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nova Venda' : 'Editar Venda'
+        return this.editedIndex === -1 ? 'Nova Item' : 'Editar Item'
       }
     },
 
@@ -374,48 +263,35 @@
         handler: _.debounce(function (val) {
           if (val) {
             const queryString = Object.keys(val).map(key => key + ':' + val[key]).join(';')
-            return this.getSale('?search=' + queryString)
+            return this.getPurchase('?search=' + queryString)
           }
         }, 500),
         deep: true
       },
       currentPage: function (val) {
-        this.getSale('?page=' + val)
-      },
-      dialog (val) {
-        val || this.close()
+        this.getPurchase('?page=' + val)
       }
     },
-    mounted () {
-       this.getSale()
-       this.getStock()
+    created () {
+      return this.getPurchase()
     },
 
     methods: {
-      text: item => item.product_name + ' — ' + item.color,
-
-      getStock (filter = '') {
+      getPurchase (filter = '') {
         this.$http.get('/stock' + filter)
-          .then(response => {
-            this.itemFromStock = response.data.data.data
-          })
-          .catch(error => console.log(error))
-      },
-      getSale (filter = '') {
-        this.$http.get('/sale' + filter)
           .then(response => {
             this.pagination = response.data.data
             this.data = response.data.data.data
           })
           .catch(error => console.log(error))
       },
+
       editItem (item, dbox = true) {
         this.editedIndex = this.data.indexOf(item)
-        item.isAdmin = this.checkboxAdmin
-        item.isActive = this.checkboxActive
         this.editedItem = Object.assign({}, item)
         this.dialog = dbox
       },
+
       checkSize (value) {
         switch (value) {
           case 'P':
@@ -428,6 +304,7 @@
             return 'Único'
         }
       },
+
       callTableAction (item, endpoint, method) {
         let tableItem = this.editedItem
         this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
@@ -442,11 +319,12 @@
         const index = this.data.indexOf(item)
         confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1)
         this.editedItem = Object.assign({}, item)
-        let endpoint = `sale/${this.editedItem.sale_id}`
+        let endpoint = `stock/${this.editedItem.stock_id}`
         let method = 'DELETE'
         this.callTableAction(item, endpoint, method)
-        this.getSale()
+        this.getPurchase()
       },
+
       close () {
         this.dialog = false
         setTimeout(() => {
@@ -454,64 +332,65 @@
           this.editedIndex = -1
         }, 300)
       },
+
       save () {
         if (this.editedIndex > -1) {
           Object.assign(this.data[this.editedIndex], this.editedItem)
           let tableItem = this.editedItem
-          let endpoint = `sale/${this.editedItem.sale_id}`
+          let endpoint = `stock/${this.editedItem.stock_id}`
           let method = 'put'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
               console.log(response)
               this.saveInline(response.data)
-              this.getSale()
+              this.getPurchase()
             })
             .catch(error => {
               console.log(error)
               return this.cancelInline
             })
         } else {
-          const user = localStorage.getItem('user')
-          this.editedItem.user_id = user
-          this.editedItem.total_sale = this.editedItem.quantity * this.editedItem.price
           let tableItem = this.editedItem
           this.data.push(this.editedItem)
-          let endpoint = `sale`
-          let method = 'post'
+          let endpoint = `stock`
+          let method = 'POST'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              console.log(response.data)
               this.saveInline(response.data)
-              this.getSale()
+              this.getPurchase()
             })
             .catch(error => {
-              this.getSale()
               console.log(error)
               return this.cancelInline
             })
         }
         this.close()
       },
+
       saveInline (data) {
         this.snack = true
         this.snackColor = 'success'
         this.snackText = data.message
       },
+
       cancelInline () {
         this.snack = true
         this.snackColor = 'error'
         this.snackText = 'Canceled'
       },
+
       reset () {
         this.snack = true
         this.snackColor = 'success'
         this.snackText = 'Data reset to default'
       },
+
       openInline () {
         this.snack = true
         this.snackColor = 'info'
         this.snackText = 'Dialog opened'
       },
+
       closeInline () {
         console.log('Dialog closed')
       }
@@ -528,11 +407,14 @@
     padding: 0 25px !important;
 
   }
+  table.v-table tbody td {
+    font-size: 12px !important;
+    font-weight: 300;
+  }
 
   table.v-table tbody td:first-child {
     padding: 0 0px !important;
   }
-
   table.v-table thead tr th span {
     font-size: 15px !important;
   }
@@ -540,18 +422,8 @@
   tbody tr:nth-of-type(odd) {
     background-color: rgba(0, 0, 0, .05);
   }
-
   table.v-table thead th:not(:first-child) {
     padding: 0 2px !important;
-  }
-
-  table.v-table thead th:not(:first-child) {
-    padding: 0 10px !important;
-  }
-
-  table.v-table tbody td {
-    font-size: 12px !important;
-    font-weight: 300;
   }
   table.v-table tbody td:first-child,
   table.v-table tbody td:not(:first-child),
