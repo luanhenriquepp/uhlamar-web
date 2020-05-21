@@ -20,7 +20,7 @@
             <v-layout>
               <v-flex xs4>
                 <v-text-field
-                  v-model="filter.product_name"
+                  v-model="filter.stock.product_name"
                   append-icon="search"
                   label="Nome do Produto"
                   multi-line
