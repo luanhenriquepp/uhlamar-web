@@ -377,7 +377,9 @@
       filter: {
         handler: _.debounce(function (val) {
           if (val) {
-            const newFilter = JSON.stringify(val).replace(/"/g, '')
+            const filterData = this.removeEmpty(val)
+            console.log(filterData)
+            const newFilter = JSON.stringify(filterData).replace(/"/g, '')
                     .replace('"{', '')
                     .replace('}"', '')
                     .replace(/,/g, ';')
@@ -390,8 +392,6 @@
                     .replace(';}', '')
                     .replace('}', '')
                     .replace(';;', ';')
-                    .replace(';discount_coupon:&', '')
-                    .replace(';buyer_name:&', '')
 
             return this.getSale('?search=' + newFilter + '&searchJoin=and')
           }
@@ -411,6 +411,17 @@
     },
 
     methods: {
+      removeEmpty (obj) {
+        console.log(obj)
+        Object.entries(obj).forEach(([key, val]) => {
+          if (val && typeof val === 'object' && obj[key] !== 'per_page') {
+            this.removeEmpty(val);
+          } else if (val == null || !val) {
+            delete obj[key];
+          }
+        });
+        return obj;
+      },
       text: item => item.product_name + ' — ' + item.color,
 
       getStock (filter = '') {
