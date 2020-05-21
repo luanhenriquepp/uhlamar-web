@@ -414,13 +414,13 @@
       removeEmpty (obj) {
         console.log(obj)
         Object.entries(obj).forEach(([key, val]) => {
-          if (val && typeof val === 'object' && obj[key] !== 'per_page') {
-            this.removeEmpty(val);
+          if (val && typeof val === 'object') {
+            this.removeEmpty(val)
           } else if (val == null || !val) {
-            delete obj[key];
+            delete obj[key]
           }
-        });
-        return obj;
+        })
+        return obj
       },
       text: item => item.product_name + ' — ' + item.color,
 
