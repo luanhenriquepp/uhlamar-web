@@ -395,9 +395,9 @@
       text: item => item.product_name + ' — ' + item.color,
 
       getStock (filter = '') {
-        this.$http.get('/stock' + filter)
+        this.$http.get('/available-stock' + filter)
           .then(response => {
-            this.itemFromStock = response.data.data.data
+            this.itemFromStock = response.data
           })
           .catch(error => console.log(error))
       },
