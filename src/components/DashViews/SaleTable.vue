@@ -397,7 +397,7 @@
       getStock (filter = '') {
         this.$http.get('/available-stock' + filter)
           .then(response => {
-            this.itemFromStock = response.data
+            this.itemFromStock = response.data.data
           })
           .catch(error => console.log(error))
       },
