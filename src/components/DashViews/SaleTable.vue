@@ -218,7 +218,7 @@
               <template v-slot:items="props">
                 <td>
                   <div>
-                    {{ props.item.product_name }}
+                    {{ props.item.stock.product_name }}
                   </div>
                 </td>
                 <td>
@@ -228,7 +228,7 @@
                 </td>
                 <td>
                   <div>
-                    R$ {{ props.item.price }}
+                    R$ {{ props.item.stock.price }}
                   </div>
                 </td>
                 <td>
@@ -248,12 +248,12 @@
                 </td>
                 <td>
                   <div>
-                    {{ props.item.color }}
+                    {{ props.item.stock.color }}
                   </div>
                 </td>
                 <td>
                   <div>
-                    {{ checkSize(props.item.size) }}
+                    {{ checkSize(props.item.stock.size) }}
                   </div>
                 </td>
                 <td>
