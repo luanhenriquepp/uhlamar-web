@@ -377,8 +377,23 @@
       filter: {
         handler: _.debounce(function (val) {
           if (val) {
-            const queryString = Object.keys(val).map(key => key + ':' + val[key]).join(';')
-            return this.getSale('?search=' + queryString)
+            const newFilter = JSON.stringify(val).replace(/"/g, '')
+                    .replace('"{', '')
+                    .replace('}"', '')
+                    .replace(/,/g, ';')
+                    .replace('}"', '')
+                    .replace(':{', '')
+                    .replace('{', '')
+                    .replace('}', ';')
+                    .replace(/product_name/g, '')
+                    .replace(/stock/g, 'stock.product_name')
+                    .replace(';}', '')
+                    .replace('}', '')
+                    .replace(';;', ';')
+                    .replace(';discount_coupon:&', '')
+                    .replace(';buyer_name:&', '')
+
+            return this.getSale('?search=' + newFilter + '&searchJoin=and')
           }
         }, 500),
         deep: true
