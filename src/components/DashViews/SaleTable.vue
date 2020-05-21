@@ -318,7 +318,7 @@
       modal: false,
       filter: {
         stock: {
-
+          product_name: ''
         }
       },
       snackText: '',
