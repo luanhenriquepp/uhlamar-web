@@ -316,7 +316,11 @@
       moment: moment,
       menu: false,
       modal: false,
-      filter: {},
+      filter: {
+        stock: {
+
+        }
+      },
       snackText: '',
       currentPage: 1,
       sizes: [
