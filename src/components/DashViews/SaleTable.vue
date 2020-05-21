@@ -392,6 +392,7 @@
                     .replace(';}', '')
                     .replace('}', '')
                     .replace(';;', ';')
+                    .replace('?search=stock.product_name:&searchJoin=and', '')
 
             return this.getSale('?search=' + newFilter + '&searchJoin=and')
           }
@@ -412,9 +413,8 @@
 
     methods: {
       removeEmpty (obj) {
-        console.log(obj)
         Object.entries(obj).forEach(([key, val]) => {
-          if (val && typeof val === 'object') {
+          if (!val && typeof val === 'object') {
             this.removeEmpty(val)
           } else if (val == null || !val) {
             delete obj[key]
@@ -432,8 +432,10 @@
           .catch(error => console.log(error))
       },
       getSale (filter = '') {
+        console.log(filter)
         this.$http.get('/sale' + filter)
           .then(response => {
+            console.log(response)
             this.pagination = response.data.data
             this.data = response.data.data.data
           })
