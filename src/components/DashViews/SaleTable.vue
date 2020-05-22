@@ -67,14 +67,6 @@
                         sm6
                         md4>
                         <v-text-field
-                          v-model="editedItem.product_name"
-                          label="Produto"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
                           v-model="editedItem.buyer_name"
                           label="Comprador"/>
                       </v-flex>
@@ -95,35 +87,6 @@
                           label="Quantidade"/>
                       </v-flex>
                       <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.price"
-                          prefix="R$"
-                          label="Preço"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.color"
-                          label="Cor"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-select
-                          :items="sizes"
-                          v-model="editedItem.size"
-                          label="Tamanho"
-                          item-text="description"
-                          item-value="key"/>
-
-                      </v-flex>
-                      <v-flex
                         xs16
                         sm10
                         md7>
@@ -133,9 +96,7 @@
                           :item-text="text"
                           label="Produto"
                           item-value="stock_id"/>
-
                       </v-flex>
-
                       <v-flex
                         xs12
                         sm6
@@ -355,13 +316,8 @@
         buyer_name: '',
         discount_coupon: '',
         dt_sale: '',
-        size: '',
-        product_name: '',
-        color: '',
-        price: '',
         quantity: '',
         total_sale: '',
-        observation: '',
         sale_id: ''
       },
       defaultItem: {}
