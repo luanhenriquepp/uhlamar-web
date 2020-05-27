@@ -78,7 +78,7 @@
                           :items="couponItems"
                           v-model="editedItem.coupon_id"
                           :clearable="true"
-                          item-text="coupon_name"
+                          :item-text="couponText"
                           label="Cupom"
                           item-value="coupon_id"/>
                       </v-flex>
@@ -385,6 +385,7 @@
         return obj
       },
       text: item => item.product_name + ' — ' + item.color,
+      couponText: item => item.coupon_name + ' — ' + item.percentage + '%',
 
       getCoupon (filter = '') {
         this.$http.get('/coupon' + filter)
