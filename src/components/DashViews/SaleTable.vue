@@ -367,7 +367,7 @@
         this.getSale('?page=' + val)
       }
     },
-    created () {
+    mounted () {
        this.getSale()
        this.getStock()
        this.getCoupon()
@@ -443,7 +443,7 @@
         let endpoint = `sale/${this.editedItem.sale_id}`
         let method = 'DELETE'
         this.callTableAction(item, endpoint, method)
-        this.getSale()
+        return this.getSale()
       },
       close () {
         this.dialog = false
