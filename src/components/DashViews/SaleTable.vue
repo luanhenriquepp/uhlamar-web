@@ -443,8 +443,8 @@
         let endpoint = `sale/${this.editedItem.sale_id}`
         let method = 'DELETE'
         this.callTableAction(item, endpoint, method)
-        return this.getSale()
       },
+
       close () {
         this.dialog = false
         setTimeout(() => {
