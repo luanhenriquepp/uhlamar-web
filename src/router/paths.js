@@ -93,6 +93,14 @@ export default [
         component: () => import(`@/components/DashViews/StockTable.vue`)
       },
       {
+        path: 'coupon-table',
+        meta: {
+          name: 'Cupom',
+          requiresAuth: true
+        },
+        component: () => import(`@/components/DashViews/CouponTable.vue`)
+      },
+      {
         path: 'tablestest',
         meta: {
           name: 'Complex Tables test',

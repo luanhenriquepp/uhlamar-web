@@ -15,21 +15,11 @@
             <v-layout>
               <v-flex xs4>
                 <v-text-field
-                  v-model="filter.product_name"
+                  v-model="filter.coupon_name"
                   append-icon="search"
-                  label="Nome do Produto"
+                  label="Nome do Cupom"
                   multi-line
                   hide-details/>
-              </v-flex>
-
-              <v-flex xs4>
-                <v-text-field
-                  v-model="filter.provider_name"
-                  append-icon="search"
-                  label="Nome do Fornecedor"
-                  multi-line
-                  hide-details/>
-
               </v-flex>
             </v-layout>
             <v-dialog
@@ -40,7 +30,7 @@
                   color="general"
                   dark
                   class="mb-2"
-                  v-on="on">Nova compra
+                  v-on="on">Novo Cupon
                 </v-btn>
               </template>
 
@@ -51,106 +41,19 @@
                       <v-flex
                         xs12
                         sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.product_name"
-                          label="Produto"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.provider_name"
-                          label="Fornecedor"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.color"
-                          label="Cor"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.quantity"
-                          label="Quantidade"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-select
-                          :items="sizes"
-                          v-model="editedItem.size"
-                          label="Tamanho"
-                          item-text="description"
-                          item-value="key"/>
-
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.price"
-                          prefix="R$"
-                          label="Preço"/>
-                      </v-flex>
-                      <v-flex
-                        xs12
-                        sm6
                         md6>
-                        <v-select
-                          :items="investments_type"
-                          v-model="editedItem.investment_type"
-                          label="Tipo de Investimento"
-                          item-text="description"
-                          item-value="key"/>
+                        <v-text-field
+                          v-model="editedItem.coupon_name"
+                          label="Cupom"/>
                       </v-flex>
                       <v-flex
-                        xs12
-                        sm6
-                        md6>
-                        <v-menu
-                          ref="menu"
-                          v-model="menu"
-                          :close-on-content-click="false"
-                          :return-value.sync="editedItem.dt_purchase"
-                          transition="scale-transition"
-                          offset-y
-                          min-width="290px"
-                        >
-                          <template v-slot:activator="{ on }">
-                            <v-text-field
-                              v-model="editedItem.dt_purchase"
-                              label="Selecionar Data"
-                              prepend-icon="event"
-                              readonly
-                              v-on="on"
-                            />
-                          </template>
-                          <v-date-picker
-                            v-model="editedItem.dt_purchase"
-                            no-title
-                            scrollable>
-                            <v-spacer/>
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="menu = false">Cancel
-                            </v-btn>
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="$refs.menu.save(editedItem.dt_purchase)">OK
-                            </v-btn>
-                          </v-date-picker>
-                        </v-menu>
+                        xs10
+                        sm24
+                        md4>
+                        <v-text-field
+                          v-model="editedItem.percentage"
+                          suffix="%"
+                          label="Porcentagem"/>
                       </v-flex>
                     </v-layout>
                   </v-container>
@@ -191,28 +94,10 @@
               <template v-slot:items="props">
 
                 <td>
-                  <div>{{ props.item.product_name }}</div>
+                  <div>{{ props.item.coupon_name }}</div>
                 </td>
                 <td>
-                  <div>{{ props.item.provider_name }}</div>
-                </td>
-                <td>
-                  <div>R$ {{ props.item.price }}</div>
-                </td>
-                <td>
-                  <div>{{ props.item.quantity }}</div>
-                </td>
-                <td>
-                  <div>R$ {{ props.item.total_purchase }}</div>
-                </td>
-                <td>
-                  <div>{{ props.item.color }}</div>
-                </td>
-                <td>
-                  <div>{{ checkSize(props.item.size) }}</div>
-                </td>
-                <td>
-                  <div>{{ props.item.dt_purchase | friendlyDate }}</div>
+                  <div>{{ props.item.percentage }}</div>
                 </td>
                 <td class="text-md-justify">
                   <v-icon
@@ -252,33 +137,17 @@
 </template>
 
 <script>
-  import moment from 'moment'
   import _ from 'lodash'
 
   export default {
-    filters: {
-      friendlyDate: function (date) {
-        return moment(date).format('D/MM/YYYY')
-      }
-    },
+
     data: () => ({
       loading: true,
       pagination: {},
-      sizes: [
-        { key: 'P', description: 'Pequeno' },
-        { key: 'M', description: 'Médio' },
-        { key: 'G', description: 'Grande' },
-        { key: 'U', description: 'Único' }
-      ],
-      investments_type: [
-        { key: 'internal', description: 'Investimento Interno' },
-        { key: 'external', description: 'Investimento Externo' }
-      ],
       filter: {},
       snack: false,
       currentPage: 1,
       snackColor: '',
-      moment: moment,
       menu: false,
       modal: false,
       snackText: '',
@@ -287,39 +156,22 @@
       dialog: false,
       search: '',
       headers: [
-        { text: 'Produto', value: 'product_name', sortable: false },
-        { text: 'Fornecedor', value: 'provider_name', sortable: false },
-        { text: 'Preço', value: 'price', sortable: false },
-        { text: 'Quantidade', value: 'quantity', sortable: false },
-        { text: 'Total', value: 'total_purchase', sortable: false },
-        { text: 'Cor', value: 'color', sortable: false },
-        { text: 'Tamanho', value: 'size', sortable: false },
-        { text: 'Data', value: 'dt_purchase', sortable: false },
+        { text: 'Cupom', value: 'coupon_name', sortable: false },
+        { text: 'Porcentagem', value: 'percentage', sortable: false },
         { text: 'Ações', value: 'actions', sortable: false }
 
       ],
-      filterProductName: '',
-      filterProviderName: '',
       editedIndex: -1,
       editedItem: {
-        purchase_id: '',
-        user_id: '',
-        product_name: '',
-        provider_name: '',
-        price: '',
-        quantity: '',
-        investment_type: '',
-        size: '',
-        color: '',
-        observation: '',
-        total_purchase: '',
-        dt_purchase: ''
+        coupon_name: '',
+        percentage: '',
+        coupon_id: ''
       }
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'Nova Compra' : 'Editar Compra'
+        return this.editedIndex === -1 ? 'Novo Cupom' : 'Editar Cupom'
       }
     },
 
@@ -328,22 +180,22 @@
         handler: _.debounce(function (val) {
           if (val) {
             const queryString = Object.keys(val).map(key => key + ':' + val[key]).join(';')
-            return this.getPurchase('?search=' + queryString)
+            return this.getCoupon('?search=' + queryString)
           }
         }, 500),
         deep: true
       },
       currentPage: function (val) {
-        this.getPurchase('?page=' + val)
+        this.getCoupon('?page=' + val)
       }
     },
     created () {
-      return this.getPurchase()
+      return this.getCoupon()
     },
 
     methods: {
-      getPurchase (filter = '') {
-        this.$http.get('/purchase' + filter)
+      getCoupon (filter = '') {
+        this.$http.get('/coupon' + filter)
           .then(response => {
             this.pagination = response.data.data
             this.data = response.data.data.data
@@ -386,10 +238,10 @@
         const index = this.data.indexOf(item)
         confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1)
         this.editedItem = Object.assign({}, item)
-        let endpoint = `purchase/${this.editedItem.purchase_id}`
+        let endpoint = `coupon/${this.editedItem.coupon_id}`
         let method = 'DELETE'
         this.callTableAction(item, endpoint, method)
-        this.getPurchase()
+        this.getCoupon()
       },
 
       close () {
@@ -404,13 +256,13 @@
         if (this.editedIndex > -1) {
           Object.assign(this.data[this.editedIndex], this.editedItem)
           let tableItem = this.editedItem
-          let endpoint = `purchase/${this.editedItem.purchase_id}`
+          let endpoint = `coupon/${this.editedItem.coupon_id}`
           let method = 'put'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
               console.log(response)
               this.saveInline(response.data)
-              this.getPurchase()
+              this.getCoupon()
             })
             .catch(error => {
               console.log(error)
@@ -419,15 +271,14 @@
         } else {
           const user = localStorage.getItem('user')
           this.editedItem.user_id = user
-          this.editedItem.total_purchase = this.editedItem.quantity * this.editedItem.price
           let tableItem = this.editedItem
           this.data.push(this.editedItem)
-          let endpoint = `purchase`
+          let endpoint = `coupon`
           let method = 'POST'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
               this.saveInline(response.data)
-              this.getPurchase()
+              this.getCoupon()
             })
             .catch(error => {
               console.log(error)

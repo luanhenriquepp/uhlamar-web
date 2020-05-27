@@ -36,14 +36,14 @@
                   hide-details/>
 
               </v-flex>
-              <v-flex xs4>
-                <v-text-field
-                  v-model="filter.discount_coupon"
-                  append-icon="search"
-                  label="Cupon"
-                  multi-line
-                  hide-details/>
-              </v-flex>
+              <!--              <v-flex xs4>-->
+              <!--                <v-text-field-->
+              <!--                  v-model="filter.coupon.coupon_name"-->
+              <!--                  append-icon="search"-->
+              <!--                  label="Cupom"-->
+              <!--                  multi-line-->
+              <!--                  hide-details/>-->
+              <!--              </v-flex>-->
             </v-layout>
 
             <v-dialog
@@ -65,31 +65,36 @@
                       <v-flex
                         xs12
                         sm6
-                        md4>
+                        md6>
                         <v-text-field
                           v-model="editedItem.buyer_name"
                           label="Comprador"/>
                       </v-flex>
                       <v-flex
                         xs12
-                        sm6
-                        md4>
-                        <v-text-field
-                          v-model="editedItem.discount_coupon"
-                          label="Cupon"/>
+                        sm4
+                        md6>
+                        <v-select
+                          :items="couponItems"
+                          v-model="editedItem.coupon_id"
+                          :clearable="true"
+                          item-text="coupon_name"
+                          label="Cupom"
+                          item-value="coupon_id"/>
                       </v-flex>
                       <v-flex
-                        xs12
-                        sm6
+                        xs8
+                        sm4
                         md4>
                         <v-text-field
                           v-model="editedItem.quantity"
                           label="Quantidade"/>
                       </v-flex>
+
                       <v-flex
                         xs16
-                        sm10
-                        md7>
+                        sm12
+                        md8>
                         <v-select
                           :items="itemFromStock"
                           v-model="editedItem.stock_id"
@@ -98,9 +103,9 @@
                           item-value="stock_id"/>
                       </v-flex>
                       <v-flex
-                        xs12
+                        xs14
                         sm6
-                        md4>
+                        md6>
                         <v-menu
                           ref="menu"
                           v-model="menu"
@@ -179,7 +184,7 @@
               <template v-slot:items="props">
                 <td>
                   <div>
-                    {{ props.item.stock.product_name }}
+                    {{ props.item.stock ? props.item.stock.product_name : '' }}
                   </div>
                 </td>
                 <td>
@@ -189,7 +194,7 @@
                 </td>
                 <td>
                   <div>
-                    R$ {{ props.item.stock.price }}
+                    R$ {{ props.item.stock ? props.item.stock.price : '' }}
                   </div>
                 </td>
                 <td>
@@ -204,17 +209,17 @@
                 </td>
                 <td>
                   <div>
-                    {{ props.item.discount_coupon }}
+                    {{ props.item.coupon ? props.item.coupon.coupon_name : '' }}
                   </div>
                 </td>
                 <td>
                   <div>
-                    {{ props.item.stock.color }}
+                    {{ props.item.stock ? props.item.stock.color : '' }}
                   </div>
                 </td>
                 <td>
                   <div>
-                    {{ checkSize(props.item.stock.size) }}
+                    {{ checkSize(props.item.stock ? props.item.stock.size : '') }}
                   </div>
                 </td>
                 <td>
@@ -281,6 +286,9 @@
         stock: {
           product_name: ''
         }
+        // coupon: {
+        //   coupon_name: ''
+        // }
       },
       snackText: '',
       currentPage: 1,
@@ -301,7 +309,7 @@
         { text: 'Preço', value: 'price', sortable: false },
         { text: 'Qnt', value: 'quantity', sortable: false },
         { text: 'Total', value: 'total_sale', sortable: false },
-        { text: 'Cupon', value: 'discount_coupon', sortable: false },
+        { text: 'Cupom', value: 'coupon_name', sortable: false },
         { text: 'Cor', value: 'color', sortable: false },
         { text: 'Tamanho', value: 'size', sortable: false },
         { text: 'Data', value: 'dt_sale', sortable: false },
@@ -309,16 +317,17 @@
 
       ],
       itemFromStock: [],
+      couponItems: [],
       editedIndex: -1,
       editedItem: {
         user_id: '',
         stock_id: '',
         buyer_name: '',
-        discount_coupon: '',
         dt_sale: '',
         quantity: '',
         total_sale: '',
-        sale_id: ''
+        sale_id: '',
+        coupon_id: ''
       },
       defaultItem: {}
     }),
@@ -334,7 +343,6 @@
         handler: _.debounce(function (val) {
           if (val) {
             const filterData = this.removeEmpty(val)
-            console.log(filterData)
             const newFilter = JSON.stringify(filterData).replace(/"/g, '')
                     .replace('"{', '')
                     .replace('}"', '')
@@ -357,14 +365,12 @@
       },
       currentPage: function (val) {
         this.getSale('?page=' + val)
-      },
-      dialog (val) {
-        val || this.close()
       }
     },
-    mounted () {
+    created () {
        this.getSale()
        this.getStock()
+       this.getCoupon()
     },
 
     methods: {
@@ -380,6 +386,13 @@
       },
       text: item => item.product_name + ' — ' + item.color,
 
+      getCoupon (filter = '') {
+        this.$http.get('/coupon' + filter)
+          .then(response => {
+            this.couponItems = response.data.data.data
+          })
+          .catch(error => console.log(error))
+      },
       getStock (filter = '') {
         this.$http.get('/available-stock' + filter)
           .then(response => {
@@ -388,10 +401,8 @@
           .catch(error => console.log(error))
       },
       getSale (filter = '') {
-        console.log(filter)
         this.$http.get('/sale' + filter)
           .then(response => {
-            console.log(response)
             this.pagination = response.data.data
             this.data = response.data.data.data
           })
@@ -399,8 +410,6 @@
       },
       editItem (item, dbox = true) {
         this.editedIndex = this.data.indexOf(item)
-        item.isAdmin = this.checkboxAdmin
-        item.isActive = this.checkboxActive
         this.editedItem = Object.assign({}, item)
         this.dialog = dbox
       },
@@ -450,26 +459,21 @@
           let method = 'put'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              console.log(response)
               this.saveInline(response.data)
               this.getSale()
-            })
-            .catch(error => {
+            }).catch(error => {
               console.log(error)
               return this.cancelInline
             })
         } else {
           const user = localStorage.getItem('user')
           this.editedItem.user_id = user
-          this.editedItem.total_sale = this.editedItem.quantity * this.editedItem.price
           let tableItem = this.editedItem
           this.data.push(this.editedItem)
           let endpoint = `sale`
           let method = 'post'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              console.log(response.data)
-              this.saveInline(response.data)
               this.getSale()
             })
             .catch(error => {

@@ -90,18 +90,23 @@ export default {
       // },
       {
         to: '/dashboard/purchase-table',
-        icon: 'mdi-table-edit',
+        icon: 'mdi-cart',
         text: 'Compras'
       },
       {
         to: '/dashboard/sale-table',
-        icon: 'mdi-table-edit',
+        icon: 'mdi-shopping',
         text: 'Vendas'
       },
       {
         to: '/dashboard/stock-table',
-        icon: 'mdi-table-edit',
+        icon: 'mdi-stocking',
         text: 'Estoque'
+      },
+      {
+        to: '/dashboard/coupon-table',
+        icon: 'mdi-ticket',
+        text: 'Cupom'
       }
       // {
       //   to: '/dashboard/typography',
