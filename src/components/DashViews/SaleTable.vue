@@ -425,25 +425,22 @@
             return 'Único'
         }
       },
-      callTableAction (item, endpoint, method) {
-        let tableItem = this.editedItem
-        this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-          .then((response) => this.saveInline(response.data))
+      async deleteItem (item) {
+        confirm('Are you sure you want to delete this item?')
+        let endpoint = `sale/${item.sale_id}`
+        let method = 'DELETE'
+         await this.$store.dispatch('deleteTableItem', { endpoint, method })
+          .then(response => {
+            console.log(response)
+          })
           .catch(error => {
             console.log(error)
-            return this.cancelInline
           })
+           .finally(() => {
+            this.getSale()
+        })
       },
 
-      deleteItem (item) {
-        const index = this.data.indexOf(item)
-        confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1)
-        this.editedItem = Object.assign({}, item)
-        let endpoint = `sale/${this.editedItem.sale_id}`
-        let method = 'DELETE'
-        this.callTableAction(item, endpoint, method)
-        return this.getSale()
-      },
       close () {
         this.dialog = false
         setTimeout(() => {
