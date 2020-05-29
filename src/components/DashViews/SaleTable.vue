@@ -432,13 +432,13 @@
         let method = 'DELETE'
         await this.$store.dispatch('deleteTableItem', { endpoint, method })
           .then(response => {
+            alert(response.message)
             console.log(response)
+            this.getSale()
           })
           .catch(error => {
             console.log(error)
-          }).finally(() => {
-            return this.getSale()
-        })
+          })
       },
 
       close () {
