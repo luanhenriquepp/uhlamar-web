@@ -426,12 +426,11 @@
         }
       },
 
-      deleteItem (item) {
-        const index = this.data.indexOf(item)
-        confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1)
+      async deleteItem (item) {
+        confirm('Are you sure you want to delete this item?')
         let endpoint = `sale/${item.sale_id}`
         let method = 'DELETE'
-        this.$store.dispatch('deleteTableItem', { endpoint, method })
+        await this.$store.dispatch('deleteTableItem', { endpoint, method })
           .then(response => {
             console.log(response)
           })
