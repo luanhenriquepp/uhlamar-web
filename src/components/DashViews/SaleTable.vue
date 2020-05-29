@@ -344,20 +344,19 @@
           if (val) {
             const filterData = this.removeEmpty(val)
             const newFilter = JSON.stringify(filterData).replace(/"/g, '')
-                    .replace('"{', '')
-                    .replace('}"', '')
-                    .replace(/,/g, ';')
-                    .replace('}"', '')
-                    .replace(':{', '')
-                    .replace('{', '')
-                    .replace('}', ';')
-                    .replace(/product_name/g, '')
-                    .replace(/stock/g, 'stock.product_name')
-                    .replace(';}', '')
-                    .replace('}', '')
-                    .replace(';;', ';')
-                    .replace('?search=stock.product_name:&searchJoin=and', '')
-
+              .replace('"{', '')
+              .replace('}"', '')
+              .replace(/,/g, ';')
+              .replace('}"', '')
+              .replace(':{', '')
+              .replace('{', '')
+              .replace('}', ';')
+              .replace(/product_name/g, '')
+              .replace(/stock/g, 'stock.product_name')
+              .replace(';}', '')
+              .replace('}', '')
+              .replace(';;', ';')
+              .replace('?search=stock.product_name:&searchJoin=and', '')
             return this.getSale('?search=' + newFilter + '&searchJoin=and')
           }
         }, 500),
@@ -426,23 +425,21 @@
             return 'Único'
         }
       },
-      callTableAction (item, endpoint, method) {
-        let tableItem = this.editedItem
-        this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
-          .then((response) => this.saveInline(response.data))
-          .catch(error => {
-            console.log(error)
-            return this.cancelInline
-          })
-      },
 
       deleteItem (item) {
         const index = this.data.indexOf(item)
         confirm('Are you sure you want to delete this item?') && this.data.splice(index, 1)
-        this.editedItem = Object.assign({}, item)
-        let endpoint = `sale/${this.editedItem.sale_id}`
+        let endpoint = `sale/${item.sale_id}`
         let method = 'DELETE'
-        this.callTableAction(item, endpoint, method)
+        this.$store.dispatch('deleteTableItem', { endpoint, method })
+          .then(response => {
+            console.log(response)
+          })
+          .catch(error => {
+            console.log(error)
+          }).finally(() => {
+            return this.getSale()
+        })
       },
 
       close () {
@@ -460,11 +457,11 @@
           let method = 'put'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              this.saveInline(response.data)
-              this.getSale()
+              console.log(response)
             }).catch(error => {
               console.log(error)
-              return this.cancelInline
+            }).finally(() => {
+              return this.getSale()
             })
         } else {
           const user = localStorage.getItem('user')
@@ -475,13 +472,13 @@
           let method = 'post'
           this.$store.dispatch('updateTableItem', { endpoint, tableItem, method })
             .then((response) => {
-              this.getSale()
+              console.log(response)
             })
             .catch(error => {
-              this.getSale()
               console.log(error)
-              return this.cancelInline
-            })
+            }).finally(() => {
+              return this.getSale()
+          })
         }
         this.close()
       },

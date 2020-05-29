@@ -64,4 +64,15 @@ export default {
         })
     })
   },
+  deleteTableItem ({ commit }, payload) {
+    return new Promise((resolve, reject) => {
+        let httpmethod = payload.method
+        axios({ url: `/${payload.endpoint}`, method: httpmethod })
+            .then(response => {
+                resolve(response)
+            }).catch(error => {
+            reject(error)
+        })
+    })
+  }
 }
