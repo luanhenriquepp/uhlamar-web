@@ -20,6 +20,16 @@
             <v-layout>
               <v-flex xs4>
                 <v-text-field
+                        v-model="filter.buyer_name"
+                        append-icon="search"
+                        label="Nome do Comprador"
+                        multi-line
+                        hide-details/>
+
+              </v-flex>
+
+              <v-flex xs4>
+                <v-text-field
                   v-model="filter.stock.product_name"
                   append-icon="search"
                   label="Nome do Produto"
@@ -27,23 +37,15 @@
                   hide-details/>
               </v-flex>
 
-              <v-flex xs4>
-                <v-text-field
-                  v-model="filter.buyer_name"
-                  append-icon="search"
-                  label="Nome do Comprador"
-                  multi-line
-                  hide-details/>
 
-              </v-flex>
-              <!--              <v-flex xs4>-->
-              <!--                <v-text-field-->
-              <!--                  v-model="filter.coupon.coupon_name"-->
-              <!--                  append-icon="search"-->
-              <!--                  label="Cupom"-->
-              <!--                  multi-line-->
-              <!--                  hide-details/>-->
-              <!--              </v-flex>-->
+                            <v-flex xs4>
+                              <v-text-field
+                                v-model="filter.coupon.coupon_name"
+                                append-icon="search"
+                                label="Cupom"
+                                multi-line
+                                hide-details/>
+                            </v-flex>
             </v-layout>
 
             <v-dialog
@@ -285,10 +287,10 @@
       filter: {
         stock: {
           product_name: ''
+        },
+        coupon: {
+          coupon_name: ''
         }
-        // coupon: {
-        //   coupon_name: ''
-        // }
       },
       snackText: '',
       currentPage: 1,
@@ -342,9 +344,9 @@
       filter: {
         handler: _.debounce(function (val) {
           if (val) {
-            console.log('valor entrando na funcao', val)
+            console.log('valor entrando na funcao', JSON.stringify(val))
             const filterData = this.removeEmpty(val)
-            console.log('valor depois do removeempety', filterData)
+            console.log('valor depois do removeempety', JSON.stringify(filterData))
 
             const newFilter = JSON.stringify(filterData).replace(/"/g, '')
               .replace('"{', '')
@@ -355,11 +357,18 @@
               .replace('{', '')
               .replace('}', ';')
               .replace(/product_name/g, '')
+              .replace(/coupon_name/g, '')
               .replace(/stock/g, 'stock.product_name')
+              .replace(/coupon/g, 'coupon.coupon_name')
               .replace(';}', '')
               .replace('}', '')
               .replace(';;', ';')
-              .replace('?search=stock.product_name:&searchJoin=and', '')
+              .replace(':{;', ';')
+              .replace('stock.product_name;', '')
+              .replace('coupon.coupon_name;', '')
+              .replace('}', '')
+              .replace('{:', '')
+              .replace('coupon.coupon_name:{', '')
             return this.getSale('?search=' + newFilter + '&searchJoin=and')
           }
         }, 500),
