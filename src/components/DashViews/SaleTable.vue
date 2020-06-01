@@ -342,7 +342,10 @@
       filter: {
         handler: _.debounce(function (val) {
           if (val) {
+            console.log('valor entrando na funcao', val)
             const filterData = this.removeEmpty(val)
+            console.log('valor depois do removeempety', filterData)
+
             const newFilter = JSON.stringify(filterData).replace(/"/g, '')
               .replace('"{', '')
               .replace('}"', '')
@@ -375,7 +378,7 @@
     methods: {
       removeEmpty (obj) {
         Object.entries(obj).forEach(([key, val]) => {
-          if (!val && typeof val === 'object') {
+          if (val && typeof val === 'object') {
             this.removeEmpty(val)
           } else if (val == null || !val) {
             delete obj[key]
