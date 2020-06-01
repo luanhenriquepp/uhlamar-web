@@ -348,7 +348,7 @@
             const filterData = this.removeEmpty(val)
             console.log('valor depois do removeempety', JSON.stringify(filterData))
 
-            const newFilter = JSON.stringify(filterData).replace(/"/g, '')
+            let newFilter = JSON.stringify(filterData).replace(/"/g, '')
               .replace('"{', '')
               .replace('}"', '')
               .replace(/,/g, ';')
@@ -370,6 +370,11 @@
               .replace('{:', '')
               .replace(';&', '')
               .replace('coupon.coupon_name:{', '')
+
+            if (newFilter.substring(newFilter.length -1) === ';') {
+              newFilter =     newFilter.slice(0, -1) + ''
+            }
+
             return this.getSale('?search=' + newFilter + '&searchJoin=and')
           }
         }, 500),
