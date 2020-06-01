@@ -368,6 +368,7 @@
               .replace('coupon.coupon_name;', '')
               .replace('}', '')
               .replace('{:', '')
+              .replace(';&', '')
               .replace('coupon.coupon_name:{', '')
             return this.getSale('?search=' + newFilter + '&searchJoin=and')
           }
